@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="منصة تعليمية تفاعلية عربية لتعلم مفاهيم الحوسبة الكمية لطلاب المرحلة الثانوية باستخدام محاكي Quirk">
+    <meta name="theme-color" content="#05061b">
+    <title>كم | اكتشف عالم الحوسبة الكمية</title>
+
+    <!-- خطوط جوجل: تاجوال للعربية + أوربترون للعناوين التقنية -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- أيقونة الموقع -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='10' fill='%2322d3ee'/%3E%3Cellipse cx='50' cy='50' rx='45' ry='18' fill='none' stroke='%237b5cff' stroke-width='6'/%3E%3Cellipse cx='50' cy='50' rx='45' ry='18' fill='none' stroke='%237b5cff' stroke-width='6' transform='rotate(60 50 50)'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ===== نجوم الخلفية التقنية ===== -->
+<canvas id="starsCanvas"></canvas>
+
+<!-- ===== مكتبة الأيقونات (SVG مخفي) ===== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="ic-atom" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.2"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(120 12 12)"/></symbol>
+    <symbol id="ic-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 10a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 19l-5-10V3"/><path d="M7.5 15h9"/></symbol>
+    <symbol id="ic-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></symbol>
+    <symbol id="ic-puzzle" viewBox="0 0 24 24"><circle cx="7" cy="7" r="3.6"/><rect x="13.4" y="13.4" width="7.2" height="7.2" rx="1.6"/><path d="M13.4 7H21M7 13.4V21"/></symbol>
+    <symbol id="ic-quiz" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2.2"/><path d="M8 8.6l1.6 1.6L12.4 7.4M8 15.6l1.6 1.6 2.8-2.8M14.6 9h3M14.6 16h3"/></symbol>
+    <symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="ic-teacher" viewBox="0 0 24 24"><path d="M12 4 2 9l10 5 8-4v6"/><path d="M6 12.6V17c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.4"/></symbol>
+    <symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14.6A8.6 8.6 0 0 1 9.4 4 8.6 8.6 0 1 0 20 14.6z"/></symbol>
+    <symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5"/></symbol>
+    <symbol id="ic-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="ic-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+    <symbol id="ic-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="ic-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H7.5L3.5 22.5V12a8 8 0 0 1 8-8h1.5a8 8 0 0 1 8 8z"/><path d="M8.5 11h7M8.5 14.5h4.5"/></symbol>
+    <symbol id="ic-send" viewBox="0 0 24 24"><path d="M21 3 3 10.2l7.2 3.1L13.4 21z"/></symbol>
+    <symbol id="ic-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="7" y="14" width="10" height="7" rx="1.2"/></symbol>
+    <symbol id="ic-play" viewBox="0 0 24 24"><path d="M7 4.6v14.8L19.5 12z"/></symbol>
+    <symbol id="ic-open" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+    <symbol id="ic-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="ic-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.8c.6.5.9 1.2.9 1.9V16h5.2v-.3c0-.7.3-1.4.9-1.9A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"/></symbol>
+    <symbol id="ic-reset" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5"/></symbol>
+</svg>
+
+<!-- ===== الشريط الجانبي الثابت ===== -->
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <div class="brand-logo"><svg><use href="#ic-atom"/></svg></div>
+        <div class="brand-text">
+            <strong class="brand-name" data-ar="كم" data-en="QUANTUM">كم</strong>
+            <span class="brand-sub">Quantum Learning Lab</span>
+        </div>
+    </div>
+
+    <nav class="nav" id="mainNav" data-ar-dir="rtl">
+        <a href="#home" class="nav-link active" data-target="home">
+            <svg class="nav-ic"><use href="#ic-home"/></svg><span data-ar="الرئيسية" data-en="Home">الرئيسية</span>
+        </a>
+        <a href="#concepts" class="nav-link" data-target="concepts">
+            <svg class="nav-ic"><use href="#ic-atom"/></svg><span data-ar="المفاهيم الأساسية" data-en="Core Concepts">المفاهيم الأساسية</span>
+        </a>
+        <a href="#lab" class="nav-link" data-target="lab">
+            <svg class="nav-ic"><use href="#ic-flask"/></svg><span data-ar="مختبر Quirk" data-en="Quirk Lab">مختبر Quirk</span>
+        </a>
+        <a href="#gates" class="nav-link" data-target="gates">
+            <svg class="nav-ic"><use href="#ic-grid"/></svg><span data-ar="البوابات الكمية" data-en="Quantum Gates">البوابات الكمية</span>
+        </a>
+        <a href="#activities" class="nav-link" data-target="activities">
+            <svg class="nav-ic"><use href="#ic-puzzle"/></svg><span data-ar="الأنشطة التعليمية" data-en="Activities">الأنشطة التعليمية</span>
+        </a>
+        <a href="#quiz" class="nav-link" data-target="quiz">
+            <svg class="nav-ic"><use href="#ic-quiz"/></svg><span data-ar="الاختبارات التفاعلية" data-en="Quiz">الاختبارات التفاعلية</span>
+        </a>
+        <a href="#projects" class="nav-link" data-target="projects">
+            <svg class="nav-ic"><use href="#ic-folder"/></svg><span data-ar="المشاريع" data-en="Projects">المشاريع</span>
+        </a>
+        <a href="#teacher" class="nav-link" data-target="teacher">
+            <svg class="nav-ic"><use href="#ic-teacher"/></svg><span data-ar="قسم المعلم" data-en="Teacher Zone">قسم المعلم</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="footer-chip">HTML • CSS • JS</div>
+        <p data-ar="تعلم بالممارسة داخل محاكي Quirk" data-en="Learn by practice inside Quirk">تعلم بالممارسة داخل محاكي Quirk</p>
+    </div>
+</aside>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<!-- ===== الشريط العلوي ===== -->
+<header class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="القائمة"><svg><use href="#ic-menu"/></svg></button>
+    <div class="topbar-title">
+        <span class="dot"></span>
+        <span id="currentSection" data-ar="الرئيسية" data-en="Home">الرئيسية</span>
+    </div>
+    <div class="topbar-actions">
+        <button class="pill-btn" id="langBtn" title="تغيير اللغة"><span id="langLabel">EN</span></button>
+        <button class="pill-btn" id="themeBtn" title="الوضع الليلي">
+            <svg class="btn-ic"><use href="#ic-moon" id="themeIcon"/></svg>
+            <span data-ar="الوضع الليلي" data-en="Dark Mode">الوضع الليلي</span>
+        </button>
+    </div>
+</header>
+
+<main class="main">
+
+    <!-- ============ 1) الصفحة الرئيسية ============ -->
+    <section id="home" class="section hero-section">
+        <div class="hero">
+            <div class="hero-text">
+                <span class="badge reveal" data-ar="منصة تعليمية تفاعلية • المرحلة الثانوية" data-en="Interactive platform • High school">منصة تعليمية تفاعلية • المرحلة الثانوية</span>
+                <h1 class="hero-title reveal">
+                    <span data-ar="اكتشف عالم" data-en="Discover the World of">اكتشف عالم</span>
+                    <span class="grad" data-ar="الحوسبة الكمية" data-en="Quantum Computing">الحوسبة الكمية</span>
+                </h1>
+                <p class="hero-sub reveal"
+                   data-ar="تعلم كيف تعمل الحواسيب الكمية من خلال المحاكاة والتجارب التفاعلية باستخدام Quirk."
+                   data-en="Learn how quantum computers work through simulations and interactive experiments using Quirk.">
+                    تعلم كيف تعمل الحواسيب الكمية من خلال المحاكاة والتجارب التفاعلية باستخدام Quirk.
+                </p>
+                <div class="hero-actions reveal">
+                    <a href="#concepts" class="btn btn-primary"><svg class="btn-ic"><use href="#ic-play"/></svg><span data-ar="ابدأ التعلم" data-en="Start Learning">ابدأ التعلم</span></a>
+                    <a href="#lab" class="btn btn-ghost"><svg class="btn-ic"><use href="#ic-flask"/></svg><span data-ar="افتح المحاكي" data-en="Open Simulator">افتح المحاكي</span></a>
+                </div>
+                <div class="hero-stats reveal">
+                    <div class="stat"><b>6</b><span data-ar="مفاهيم أساسية" data-en="Core concepts">مفاهيم أساسية</span></div>
+                    <div class="stat"><b>8</b><span data-ar="بوابة كمية" data-en="Quantum gates">بوابة كمية</span></div>
+                    <div class="stat"><b>6</b><span data-ar="تجربة Quirk" data-en="Quirk experiments">تجربة Quirk</span></div>
+                    <div class="stat"><b>20</b><span data-ar="سؤال اختبار" data-en="Quiz questions">سؤال اختبار</span></div>
+                </div>
+            </div>
+
+            <!-- كرة بلوك المتحركة -->
+            <div class="hero-visual reveal" aria-hidden="true">
+                <div class="bloch">
+                    <svg viewBox="0 0 320 320" class="bloch-svg">
+                        <defs>
+                            <linearGradient id="gline" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#7b5cff"/>
+                            </linearGradient>
+                            <radialGradient id="gcore"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#7b5cff" stop-opacity="0"/></radialGradient>
+                        </defs>
+                        <circle cx="160" cy="160" r="120" fill="none" stroke="url(#gline)" stroke-width="1.2" opacity=".55"/>
+                        <ellipse cx="160" cy="160" rx="120" ry="42" fill="none" stroke="url(#gline)" stroke-width="1.2" opacity=".5"/>
+                        <ellipse cx="160" cy="160" rx="42" ry="120" fill="none" stroke="url(#gline)" stroke-width="1.2" opacity=".5"/>
+                        <line x1="160" y1="30" x2="160" y2="290" stroke="#ffffff" stroke-opacity=".25" stroke-width="1"/>
+                        <circle cx="160" cy="160" r="70" fill="url(#gcore)" opacity=".5"/>
+                        <g class="spin">
+                            <line x1="160" y1="160" x2="246" y2="88" stroke="#ffd166" stroke-width="3" stroke-linecap="round"/>
+                            <circle cx="246" cy="88" r="8" fill="#ffd166"/>
+                        </g>
+                        <text x="160" y="22" class="bloch-label">|0⟩</text>
+                        <text x="160" y="312" class="bloch-label">|1⟩</text>
+                    </svg>
+                    <div class="orbit o1"></div>
+                    <div class="orbit o2"></div>
+                    <div class="float-chip c1">|ψ⟩ = α|0⟩ + β|1⟩</div>
+                    <div class="float-chip c2">H • CNOT</div>
+                    <div class="float-chip c3">Superposition</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 2) المفاهيم الأساسية ============ -->
+    <section id="concepts" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">01</div>
+            <h2 class="section-title" data-ar="المفاهيم الأساسية" data-en="Core Concepts">المفاهيم الأساسية</h2>
+            <p class="section-sub" data-ar="اضغط على أي بطاقة لعرض الشرح المبسّط والرسم التوضيحي والمثال التفاعلي."
+               data-en="Click any card to see a simple explanation, an illustration and an interactive example.">
+                اضغط على أي بطاقة لعرض الشرح المبسّط والرسم التوضيحي والمثال التفاعلي.
+            </p>
+        </div>
+        <div class="cards-grid" id="conceptsGrid"></div>
+    </section>
+
+    <!-- ============ 3) مختبر Quirk ============ -->
+    <section id="lab" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">02</div>
+            <h2 class="section-title" data-ar="مختبر Quirk التفاعلي" data-en="Interactive Quirk Lab">مختبر Quirk التفاعلي</h2>
+            <p class="section-sub" data-ar="دوائر جاهزة وتجارب مشروحة خطوة بخطوة داخل محاكي Quirk الحقيقي."
+               data-en="Ready-made circuits and step-by-step experiments inside the real Quirk simulator.">
+                دوائر جاهزة وتجارب مشروحة خطوة بخطوة داخل محاكي Quirk الحقيقي.
+            </p>
+        </div>
+
+        <div class="lab-layout">
+            <!-- الجانب: الدوائر والتجارب -->
+            <div class="lab-side">
+                <div class="panel">
+                    <h3 class="panel-title"><svg class="btn-ic"><use href="#ic-grid"/></svg><span data-ar="دوائر جاهزة" data-en="Ready circuits">دوائر جاهزة</span></h3>
+                    <div class="preset-btns" id="presetBtns"></div>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-title"><svg class="btn-ic"><use href="#ic-flask"/></svg><span data-ar="التجارب التعليمية" data-en="Experiments">التجارب التعليمية</span></h3>
+                    <div class="exp-list" id="expList"></div>
+                </div>
+            </div>
+
+            <!-- الرئيسي: المحاكي والشرح -->
+            <div class="lab-main">
+                <div class="quirk-toolbar">
+                    <div class="quirk-title"><span class="live-dot"></span> Quirk Quantum Circuit Simulator</div>
+                    <div class="quirk-tools">
+                        <button class="mini-btn" id="reloadQuirk" data-ar="تحديث" data-en="Reload">تحديث</button>
+                        <a class="mini-btn" id="openQuirk" href="https://algassert.com/quirk" target="_blank" rel="noopener">
+                            <svg class="btn-ic"><use href="#ic-open"/></svg><span data-ar="نافذة جديدة" data-en="New window">نافذة جديدة</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="quirk-frame-wrap">
+                    <iframe id="quirkFrame" title="Quirk Quantum Circuit Simulator" src="https://algassert.com/quirk" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="panel exp-detail" id="expDetail"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 4) البوابات الكمية ============ -->
+    <section id="gates" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">03</div>
+            <h2 class="section-title" data-ar="البوابات الكمية" data-en="Quantum Gates">البوابات الكمية</h2>
+            <p class="section-sub" data-ar="مكتبة البوابات: الاسم، الرمز، الوظيفة، مثال عملي، وزر «جرّب في Quirk»."
+               data-en="Gate library: name, symbol, function, practical example, and a “Try in Quirk” button.">
+                مكتبة البوابات: الاسم، الرمز، الوظيفة، مثال عملي، وزر «جرّب في Quirk».
+            </p>
+        </div>
+        <div class="cards-grid gates" id="gatesGrid"></div>
+    </section>
+
+    <!-- ============ 5) الأنشطة التعليمية ============ -->
+    <section id="activities" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">04</div>
+            <h2 class="section-title" data-ar="الأنشطة التعليمية" data-en="Learning Activities">الأنشطة التعليمية</h2>
+            <p class="section-sub" data-ar="أربعة أنشطة تفاعلية مع تغذية راجعة فورية داخل الموقع."
+               data-en="Four interactive activities with instant feedback inside the site.">
+                أربعة أنشطة تفاعلية مع تغذية راجعة فورية داخل الموقع.
+            </p>
+        </div>
+
+        <div class="tabs" id="actTabs">
+            <button class="tab active" data-act="1"><span class="tab-num">1</span><span data-ar="توقع نتيجة بوابة H" data-en="Predict the H gate">توقع نتيجة بوابة H</span></button>
+            <button class="tab" data-act="2"><span class="tab-num">2</span><span data-ar="أنشئ حالة Bell" data-en="Build a Bell state">أنشئ حالة Bell</span></button>
+            <button class="tab" data-act="3"><span class="tab-num">3</span><span data-ar="اختر البوابة المناسبة" data-en="Choose the right gate">اختر البوابة المناسبة</span></button>
+            <button class="tab" data-act="4"><span class="tab-num">4</span><span data-ar="ابنِ دائرة بالسحب والأفلت" data-en="Drag &amp; drop a circuit">ابنِ دائرة بالسحب والأفلت</span></button>
+        </div>
+
+        <!-- النشاط 1 -->
+        <div class="activity panel active" id="act-1">
+            <div class="act-head">
+                <h3 data-ar="النشاط 1: توقّع نتيجة بوابة H" data-en="Activity 1: Predict the H gate result">النشاط 1: توقّع نتيجة بوابة H</h3>
+                <p data-ar="قبل أن تشغّل المحاكاة، اختر إجابتك. ثم شغّل الدائرة وقيس 10 مرات لترى النتيجة." data-en="Choose your answer before running the simulation. Then run the circuit and measure 10 times.">قبل أن تشغّل المحاكاة، اختر إجابتك. ثم شغّل الدائرة وقيس 10 مرات لترى النتيجة.</p>
+            </div>
+            <div class="act-body">
+                <div class="mini-circuit">
+                    <span class="wire-label">q0</span>
+                    <span class="wire"></span>
+                    <span class="gate-box" id="a1GateBox">|0⟩</span>
+                    <span class="wire"></span>
+                    <span class="gate-box meas" id="a1MeasBox">?</span>
+                </div>
+                <div class="prob-bars" id="a1Bars">
+                    <div class="pbar"><label>P(|0⟩)</label><div class="track"><i id="a1P0" style="width:100%"></i></div><b id="a1V0">100%</b></div>
+                    <div class="pbar"><label>P(|1⟩)</label><div class="track"><i id="a1P1" style="width:0%"></i></div><b id="a1V1">0%</b></div>
+                </div>
+                <div class="q-block">
+                    <h4 data-ar="سؤال: ماذا سيظهر بعد تطبيق H ثم القياس؟" data-en="Question: what appears after applying H then measuring?">سؤال: ماذا سيظهر بعد تطبيق H ثم القياس؟</h4>
+                    <div class="opt-row" id="a1Options">
+                        <button class="opt" data-correct="0">دائماً 0</button>
+                        <button class="opt" data-correct="1">دائماً 1</button>
+                        <button class="opt" data-correct="2">0 أو 1 باحتمال 50% لكل منهما</button>
+                        <button class="opt" data-correct="3">لا يمكن القياس</button>
+                    </div>
+                </div>
+                <div class="act-controls">
+                    <button class="btn btn-primary" id="a1Apply"><svg class="btn-ic"><use href="#ic-play"/></svg><span data-ar="طبّق بوابة H" data-en="Apply H gate">طبّق بوابة H</span></button>
+                    <button class="btn btn-ghost" id="a1Measure" disabled><span data-ar="قياس 10 مرات" data-en="Measure 10 times">قياس 10 مرات</span></button>
+                    <button class="btn btn-ghost" id="a1Reset"><svg class="btn-ic"><use href="#ic-reset"/></svg><span data-ar="إعادة" data-en="Reset">إعادة</span></button>
+                </div>
+                <div class="feedback" id="a1Feedback" hidden></div>
+                <div class="result-log" id="a1Log"></div>
+            </div>
+        </div>
+
+        <!-- النشاط 2 -->
+        <div class="activity panel" id="act-2">
+            <div class="act-head">
+                <h3 data-ar="النشاط 2: أنشئ حالة Bell" data-en="Activity 2: Build a Bell state">النشاط 2: أنشئ حالة Bell</h3>
+                <p data-ar="اختر خطوتين لبناء الدائرة الكلاسيكية |00⟩ ← (|00⟩+|11⟩)/√2 ثم تحقّق من النتيجة." data-en="Pick two steps to build the classic circuit |00⟩ → (|00⟩+|11⟩)/√2 then check the result.">اختر خطوتين لبناء الدائرة الكلاسيكية |00⟩ ← (|00⟩+|11⟩)/√2 ثم تحقّق من النتيجة.</p>
+            </div>
+            <div class="act-body">
+                <div class="bell-steps">
+                    <div class="bell-step">
+                        <h4><span class="step-no">1</span><span data-ar="الخطوة الأولى: بوابة على الكيوبت العلوي (q0)" data-en="Step 1: gate on the top qubit (q0)">الخطوة الأولى: بوابة على الكيوبت العلوي (q0)</span></h4>
+                        <div class="opt-row" data-group="s1">
+                            <button class="opt" data-val="H">H</button>
+                            <button class="opt" data-val="X">X</button>
+                            <button class="opt" data-val="Z">Z</button>
+                            <button class="opt" data-val="I" data-ar="لا شيء" data-en="Nothing">لا شيء</button>
+                        </div>
+                    </div>
+                    <div class="bell-step">
+                        <h4><span class="step-no">2</span><span data-ar="الخطوة الثانية: اربط الكيوبتين (q0 → q1)" data-en="Step 2: link the two qubits (q0 → q1)">الخطوة الثانية: اربط الكيوبتين (q0 → q1)</span></h4>
+                        <div class="opt-row" data-group="s2">
+                            <button class="opt" data-val="CX" data-ar="CNOT (تحكم)" data-en="CNOT (control)">CNOT (تحكم)</button>
+                            <button class="opt" data-val="H">H</button>
+                            <button class="opt" data-val="SWAP">SWAP</button>
+                            <button class="opt" data-val="I" data-ar="لا شيء" data-en="Nothing">لا شيء</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="act-controls">
+                    <button class="btn btn-primary" id="a2Run"><svg class="btn-ic"><use href="#ic-play"/></svg><span data-ar="ابنِ الدائرة وتحقّق" data-en="Build and check">ابنِ الدائرة وتحقّق</span></button>
+                    <button class="btn btn-ghost" id="a2InQuirk"><svg class="btn-ic"><use href="#ic-open"/></svg><span data-ar="افتح في Quirk" data-en="Open in Quirk">افتح في Quirk</span></button>
+                    <button class="btn btn-ghost" id="a2Reset"><span data-ar="إعادة" data-en="Reset">إعادة</span></button>
+                </div>
+                <div class="state-view" id="a2State">|00⟩</div>
+                <div class="feedback" id="a2Feedback" hidden></div>
+            </div>
+        </div>
+
+        <!-- النشاط 3 -->
+        <div class="activity panel" id="act-3">
+            <div class="act-head">
+                <h3 data-ar="النشاط 3: اختر البوابة المناسبة" data-en="Activity 3: Choose the right gate">النشاط 3: اختر البوابة المناسبة</h3>
+                <p data-ar="لكل مهمة اختر البوابة التي تحوّل الحالة الأولى إلى الحالة المستهدفة." data-en="For each task, pick the gate that transforms the initial state into the target state.">لكل مهمة اختر البوابة التي تحوّل الحالة الأولى إلى الحالة المستهدفة.</p>
+            </div>
+            <div class="act-body">
+                <div class="task-top">
+                    <span class="task-count" id="a3Count">المهمة 1 / 5</span>
+                    <div class="task-progress"><i id="a3Bar" style="width:0%"></i></div>
+                </div>
+                <div id="a3Task"></div>
+                <div class="feedback" id="a3Feedback" hidden></div>
+                <div class="act-controls">
+                    <button class="btn btn-primary" id="a3Next" hidden><span data-ar="المهمة التالية" data-en="Next task">المهمة التالية</span></button>
+                    <button class="btn btn-ghost" id="a3Restart" hidden><span data-ar="إعادة النشاط" data-en="Restart activity">إعادة النشاط</span></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- النشاط 4 -->
+        <div class="activity panel" id="act-4">
+            <div class="act-head">
+                <h3 data-ar="النشاط 4: اسحب وأفلت لبناء دائرة" data-en="Activity 4: Drag &amp; drop to build a circuit">النشاط 4: اسحب وأفلت لبناء دائرة</h3>
+                <p data-ar="اسحب البوابات (أو انقر عليها ثم انقر الخانة) إلى الأسلاك لبلوغ الحالة المستهدفة." data-en="Drag gates (or click a gate then a slot) onto the wire to reach the target state.">اسحب البوابات (أو انقر عليها ثم انقر الخانة) إلى الأسلاك لبلوغ الحالة المستهدفة.</p>
+            </div>
+            <div class="act-body">
+                <div class="target-box">
+                    <span data-ar="الحالة المستهدفة:" data-en="Target state:">الحالة المستهدفة:</span>
+                    <b id="a4Target">|1⟩</b>
+                    <span class="round-no" id="a4Round">الجولة 1 / 4</span>
+                </div>
+                <div class="gate-palette" id="a4Palette"></div>
+                <div class="circuit-builder" id="a4Circuit">
+                    <span class="wire-label">q0</span>
+                    <span class="wire-line"></span>
+                    <div class="slots" id="a4Slots"></div>
+                    <span class="wire-line"></span>
+                    <span class="gate-box meas">M</span>
+                </div>
+                <div class="act-controls">
+                    <button class="btn btn-primary" id="a4Run"><svg class="btn-ic"><use href="#ic-play"/></svg><span data-ar="شغّل الدائرة" data-en="Run circuit">شغّل الدائرة</span></button>
+                    <button class="btn btn-ghost" id="a4Clear"><span data-ar="مسح" data-en="Clear">مسح</span></button>
+                    <button class="btn btn-ghost" id="a4New" hidden><span data-ar="الجولة التالية" data-en="Next round">الجولة التالية</span></button>
+                </div>
+                <div class="state-view" id="a4State">|0⟩</div>
+                <div class="feedback" id="a4Feedback" hidden></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 6) الاختبارات التفاعلية ============ -->
+    <section id="quiz" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">05</div>
+            <h2 class="section-title" data-ar="الاختبارات التفاعلية" data-en="Interactive Quiz">الاختبارات التفاعلية</h2>
+            <p class="section-sub" data-ar="20 سؤالاً متعدد الخيارات مع تصحيح فوري، حساب للنتيجة، ورسالة تشجيعية."
+               data-en="20 multiple-choice questions with instant correction, scoring and an encouraging message.">
+                20 سؤالاً متعدد الخيارات مع تصحيح فوري، حساب للنتيجة، ورسالة تشجيعية.
+            </p>
+        </div>
+        <div class="quiz-wrap panel">
+            <div class="quiz-top">
+                <div class="quiz-progress"><i id="quizBar" style="width:5%"></i></div>
+                <div class="quiz-meta">
+                    <span id="quizCounter">السؤال 1 / 20</span>
+                    <span class="score-chip"><span data-ar="النقاط" data-en="Score">النقاط</span>: <b id="quizScore">0</b></span>
+                </div>
+            </div>
+            <div id="quizBody"></div>
+        </div>
+    </section>
+
+    <!-- ============ 7) صفحة المشاريع ============ -->
+    <section id="projects" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">06</div>
+            <h2 class="section-title" data-ar="صفحة المشاريع" data-en="Projects">صفحة المشاريع</h2>
+            <p class="section-sub" data-ar="نماذج مشاريع صغيرة ينفّذها الطالب داخل Quirk ثم يوثّق النتائج."
+               data-en="Small project models the student runs inside Quirk then documents the results.">
+                نماذج مشاريع صغيرة ينفّذها الطالب داخل Quirk ثم يوثّق النتائج.
+            </p>
+        </div>
+        <div class="cards-grid" id="projectsGrid"></div>
+    </section>
+
+    <!-- ============ 8) قسم المعلم ============ -->
+    <section id="teacher" class="section" data-reveal>
+        <div class="section-head">
+            <div class="section-num">07</div>
+            <h2 class="section-title" data-ar="قسم المعلم" data-en="Teacher Zone">قسم المعلم</h2>
+            <p class="section-sub" data-ar="أهداف الدرس، أوراق عمل قابلة للطباعة، أسئلة تقويم، وأنشطة صفية."
+               data-en="Lesson objectives, printable worksheets, assessment questions and classroom activities.">
+                أهداف الدرس، أوراق عمل قابلة للطباعة، أسئلة تقويم، وأنشطة صفية.
+            </p>
+        </div>
+
+        <div class="teacher-grid">
+            <div class="panel t-card">
+                <h3 class="panel-title"><svg class="btn-ic"><use href="#ic-target"/></svg><span data-ar="أهداف الدرس" data-en="Lesson objectives">أهداف الدرس</span></h3>
+                <ul class="t-list">
+                    <li data-ar="يعرّف الطالب الكيوبت ويقارنه بالبت التقليدي." data-en="Define the qubit and compare it with the classical bit.">يعرّف الطالب الكيوبت ويقارنه بالبت التقليدي.</li>
+                    <li data-ar="يشرح التراكب والتشابك بلغة بسيطة مع مثال حياتي." data-en="Explain superposition and entanglement with a daily-life example.">يشرح التراكب والتشابك بلغة بسيطة مع مثال حياتي.</li>
+                    <li data-ar="يستخدم محاكي Quirk لبناء دائرة بيل ويقرأ نتائج القياس." data-en="Use Quirk to build a Bell circuit and read measurement results.">يستخدم محاكي Quirk لبناء دائرة بيل ويقرأ نتائج القياس.</li>
+                    <li data-ar="يميّز بين البوابات X و H و Z و CNOT وظيفياً." data-en="Distinguish X, H, Z and CNOT gates functionally.">يميّز بين البوابات X و H و Z و CNOT وظيفياً.</li>
+                    <li data-ar="يستنتج أن القياس يُحدث انهياراً للحالة ونتائج عشوائية متكررة." data-en="Conclude that measurement collapses the state and yields repeatable-random outcomes.">يستنتج أن القياس يُحدث انهياراً للحالة ونتائج عشوائية متكررة.</li>
+                </ul>
+            </div>
+
+            <div class="panel t-card">
+                <h3 class="panel-title"><svg class="btn-ic"><use href="#ic-print"/></svg><span data-ar="أوراق عمل قابلة للطباعة" data-en="Printable worksheets">أوراق عمل قابلة للطباعة</span></h3>
+                <div class="ws-list" id="wsList"></div>
+            </div>
+
+            <div class="panel t-card">
+                <h3 class="panel-title"><svg class="btn-ic"><use href="#ic-quiz"/></svg><span data-ar="أسئلة تقويم" data-en="Assessment questions">أسئلة تقويم</span></h3>
+                <ol class="t-list numbered" id="assessList"></ol>
+                <button class="btn btn-ghost full" id="printAssess"><svg class="btn-ic"><use href="#ic-print"/></svg><span data-ar="طباعة أسئلة التقويم" data-en="Print assessment">طباعة أسئلة التقويم</span></button>
+            </div>
+
+            <div class="panel t-card">
+                <h3 class="panel-title"><svg class="btn-ic"><use href="#ic-teacher"/></svg><span data-ar="أنشطة صفية" data-en="Classroom activities">أنشطة صفية</span></h3>
+                <div class="t-list" id="classActList"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <p><span data-ar="موقع تعليمي تفاعلي للحوسبة الكمية — من إعداد قسم العلوم والتقنية." data-en="Interactive quantum computing education site — Science &amp; Technology Department.">موقع تعليمي تفاعلي للحوسبة الكمية — من إعداد قسم العلوم والتقنية.</span></p>
+        <p class="muted">Powered by <b>Quirk</b> — algassert.com/quirk</p>
+    </footer>
+</main>
+
+<!-- ===== زر العودة للأعلى ===== -->
+<button class="back-top" id="backTop" aria-label="العودة للأعلى"><svg><use href="#ic-up"/></svg></button>
+
+<!-- ===== نافذة المفهوم ===== -->
+<div class="modal" id="conceptModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-box" role="dialog" aria-modal="true">
+        <button class="modal-close" data-close aria-label="إغلاق"><svg><use href="#ic-close"/></svg></button>
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+</div>
+
+<!-- ===== المساعد التعليمي الذكي ===== -->
+<button class="assistant-fab" id="assistantFab" aria-label="المساعد التعليمي">
+    <svg><use href="#ic-chat"/></svg>
+    <span class="fab-tip" data-ar="اسأل المساعد" data-en="Ask the assistant">اسأل المساعد</span>
+</button>
+
+<div class="assistant-panel" id="assistantPanel" aria-hidden="true">
+    <header class="as-head">
+        <div class="as-avatar"><svg><use href="#ic-atom"/></svg></div>
+        <div>
+            <b data-ar="المساعد الكمّي" data-en="Quantum Assistant">المساعد الكمّي</b>
+            <small data-ar="يجيب عن أسئلتك ويقترح تجارب Quirk" data-en="Answers questions and suggests Quirk experiments">يجيب عن أسئلتك ويقترح تجارب Quirk</small>
+        </div>
+        <button class="icon-btn" id="asClose" aria-label="إغلاق"><svg><use href="#ic-close"/></svg></button>
+    </header>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-suggestions" id="chatSuggestions"></div>
+    <form class="chat-input" id="chatForm">
+        <input type="text" id="chatText" placeholder="اكتب سؤالك عن الحوسبة الكمية…" autocomplete="off">
+        <button type="submit" aria-label="إرسال"><svg><use href="#ic-send"/></svg></button>
+    </form>
+</div>
+
+<!-- منطقة الطباعة -->
+<div id="printArea"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

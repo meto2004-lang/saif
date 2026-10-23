@@ -44,6 +44,8 @@ function applyLang() {
 
     renderConcepts(); renderGates(); renderLab();
     renderProjects(); renderTeacher(); renderActivitiesStatic();
+    if ($("#a3Task")) a3Render();          /* عدّاد المهمة وبطاقتها */
+    if ($("#a4Slots")) a4Render();         /* عدّاد الجولة وخاناتها */
     if ($("#quizBody")) renderQuiz();
     $("#chatSuggestions") && renderSuggestions();
     renderWelcome();
@@ -665,7 +667,6 @@ function a3Render() {
             </div>
         </div>`;
     $$("#a3Opts .opt").forEach(b => b.onclick = () => a3Check(b, tk));
-    $("#a3Feedback").hidden = true; $("#a3Next").hidden = true;
 }
 function a3Check(btn, tk) {
     let s = stateOf(t(tk.from));
@@ -685,8 +686,8 @@ function a3Check(btn, tk) {
 function a3Final() {
     $("#a3Count").textContent = LANG === "ar" ? "اكتمل النشاط!" : "Activity complete!";
 }
-$("#a3Next").onclick = () => { A3.i++; a3Render(); };
-$("#a3Restart").onclick = () => { A3.i = 0; a3Render(); };
+$("#a3Next").onclick = () => { A3.i++; a3Render(); $("#a3Feedback").hidden = true; $("#a3Next").hidden = true; };
+$("#a3Restart").onclick = () => { A3.i = 0; a3Render(); $("#a3Feedback").hidden = true; $("#a3Next").hidden = true; };
 
 /* --- النشاط 4: السحب والأفلت --- */
 const A4 = { round: 0, slots: [null, null, null, null], picked: null };
@@ -863,10 +864,10 @@ function printWorksheet(id) {
 
 /* ============ 13) المساعد التعليمي الذكي ============ */
 const panel = $("#assistantPanel"), msgs = $("#chatMessages");
-let welcomed = false;
+let welcomed = false, chatUsed = false;
 function renderWelcome() {
     if (!msgs) return;
-    if (msgs.children.length) return;   /* نحتفظ بالمحادثة الحالية */
+    if (chatUsed) return;              /* بدأ المستخدم المحادثة: نحتفظ بها كما هي */
     msgs.innerHTML = "";
     addMsg("bot", LANG === "ar"
         ? "أهلاً بك! أنا المساعد الكمّي 🤖 — اسألني عن الكيوبت، التراكب، التشابك، البوابات، أو كيف تستخدم Quirk.\nأستطيع أيضاً تحميل تجربة مناسبة داخل المحاكي مباشرة."
@@ -897,6 +898,7 @@ function renderSuggestions() {
 $("#chatForm").addEventListener("submit", e => {
     e.preventDefault();
     const q = $("#chatText").value.trim(); if (!q) return;
+    chatUsed = true;
     addMsg("user", q); $("#chatText").value = "";
     setTimeout(() => botAnswer(q), 350);
 });

@@ -210,6 +210,10 @@ def place_flag(page, rect):
 def build_header(page):
     cover(page, (CARD[0] + 0.6, CARD[1] + 0.6, CARD[2] - 0.6, CARD[3] - 0.6))
 
+    # ---------- إعادة رسم إطارات الخانات الثلاث (غطاء البطاقة يمحوها لأنها مرسومة قبله)
+    for box in (BOX_QR, BOX_BOOTH, BOX_FLAG):
+        page.draw_rect(pymupdf.Rect(*box), color=rgb(INK), fill=None, width=0.75)
+
     # ---------- اليسار: الهوية
     text(page, 96, 300, "QUANTUM LEARNING LAB", 22, "m", TEAL)
 
@@ -235,41 +239,53 @@ def build_header(page):
          extra_css=f"body{{font-size:22px;font-family:pl;color:{MUTED};}}", align="left",
          line_height=1.2, tag="country")
 
-    # ---------- العلم في خانته من القالب
-    fw = BOX_FLAG[2] - BOX_FLAG[0] - 4
-    fh = fw * 2 / 3
-    place_flag(page, (BOX_FLAG[0] + 2, BOX_FLAG[1] + 12, BOX_FLAG[0] + 2 + fw, BOX_FLAG[1] + 12 + fh))
+    # ---------- العلم في خانته من القالب (داخل الإطار تمامًا)
+    inner_w = BOX_FLAG[2] - BOX_FLAG[0] - 14
+    inner_h = BOX_FLAG[3] - BOX_FLAG[1] - 14
+    fh = inner_w * 2 / 3
+    if fh > inner_h:                       # احترام نسبة العلم مع البقاء داخل الإطار
+        fh = inner_h
+        inner_w = fh * 3 / 2
+    fx = BOX_FLAG[0] + (BOX_FLAG[2] - BOX_FLAG[0] - inner_w) / 2
+    fy = BOX_FLAG[1] + (BOX_FLAG[3] - BOX_FLAG[1] - fh) / 2
+    place_flag(page, (fx, fy, fx + inner_w, fy + fh))
 
     # ---------- رمز QR
     make_qr(QR_PNG)
     page.insert_image(pymupdf.Rect(BOX_QR[0] + 8, BOX_QR[1] + 8, BOX_QR[2] - 8, BOX_QR[3] - 8),
                       filename=QR_PNG)
 
-    text(page, (BOX_BOOTH[0] + BOX_BOOTH[2]) / 2, BOX_BOOTH[3] - 14, "—", 30, "l", MUTED, "center")
+    text(page, (BOX_BOOTH[0] + BOX_BOOTH[2]) / 2, BOX_BOOTH[3] - 16, "—", 30, "l", MUTED, "center")
+    text(page, (BOX_BOOTH[0] + BOX_BOOTH[2]) / 2, BOX_BOOTH[3] - 42, "Booth", 12, "l", MUTED, "center")
 
-    # ---------- العنوان
-    html(page, (1040, 278, 2150, 424),
-         '<span style="font-family:pb;font-size:54px;color:%s;">«كم» منصة عربية تجعل الحوسبة الكمية '
+    # ---------- العنوان والقائمون عليه (العمود ينتهي عند 2005 ليفسح حقل ID)
+    TX1 = 2005
+    html(page, (1040, 278, TX1, 424),
+         '<span style="font-family:pb;font-size:50px;color:%s;">«كم» منصة عربية تجعل الحوسبة الكمية '
          'تجربة يراها الطالب ويصنعها بنفسه</span>' % INK,
          line_height=1.22, tag="title")
 
-    html(page, (1040, 420, 2150, 458),
+    html(page, (1040, 412, TX1, 448),
          "من المفهوم إلى الدائرة في ثلاث خطوات — دون رياضيات متقدمة",
-         extra_css=f"body{{font-size:25px;color:{TEAL};font-family:pm;}}", line_height=1.25,
+         extra_css=f"body{{font-size:24px;color:{TEAL};font-family:pm;}}", line_height=1.25,
          tag="subtitle")
 
-    html(page, (1040, 456, 2150, 488),
-         '<span style="font-family:pl;font-size:20px;color:%s;">الطلاب: </span>'
-         '<span style="font-family:pm;font-size:21px;">أسامة حمد عبدالرحمن الدايل · '
+    html(page, (1040, 442, TX1, 472),
+         '<span style="font-family:pl;font-size:19px;color:%s;">الطلاب: </span>'
+         '<span style="font-family:pm;font-size:19px;">أسامة حمد عبدالرحمن الدايل · '
          'عبدالله عمر محمد المسند · فارس داوود عبدالله الراجحي</span>' % MUTED,
          line_height=1.25, tag="students")
 
-    html(page, (1040, 486, 2150, 516),
-         '<span style="font-family:pl;font-size:20px;color:%s;">المشرف: </span>'
-         '<span style="font-family:pm;font-size:21px;">الأستاذ محمد السيد متولى — معلم الحاسب الآلي</span>'
+    html(page, (1040, 470, 1868, 500),
+         '<span style="font-family:pl;font-size:19px;color:%s;">المشرف: </span>'
+         '<span style="font-family:pm;font-size:19px;">الأستاذ محمد السيد متولى — معلم الحاسب الآلي</span>'
          % MUTED, line_height=1.25, tag="supervisor")
 
-    text(page, 2149, 516, "ID: ______________", 19, "l", MUTED, "right")
+    # ---------- حقل رقم الطالب في موضعه الأصلي من القالب (أسفل خانة العلم)
+    # حقل رقم الطالب: على سطر المشرف نفسه، في أقصى اليمين
+    html(page, (1880, 470, 2145, 500),
+         '<span style="font-family:pl;font-size:18px;color:%s;">ID: ____________</span>' % MUTED,
+         align="right", direction="ltr", line_height=1.2, tag="id-field")
 
 
 # --------------------------------------------------------------------- عناوين اللوحات

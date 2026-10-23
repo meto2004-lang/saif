@@ -778,6 +778,67 @@ body.light .m-example{ background:rgba(230,236,255,.65); }
 .pitch-label{ font-family:var(--font-tech); font-size:10.5px; letter-spacing:2px; color:var(--text-3); }
 .pitch-card h3{ font-size:17.5px; font-weight:800; margin:6px 0 8px; }
 .pitch-card p{ font-size:14.3px; color:var(--text-2); }
+/* بيانات المدرسة والمسار داخل بطاقة التعريف */
+.pitch-meta{ display:flex; flex-wrap:wrap; gap:9px; position:relative; z-index:1; margin-top:4px; }
+.meta-item{
+    display:inline-flex; align-items:center; gap:8px; padding:6px 13px; border-radius:99px;
+    font-size:12.8px; font-weight:600; color:var(--text-2);
+    background:rgba(255,255,255,.04); border:1px solid var(--line-strong);
+}
+.meta-item .meta-ic{ width:15px; height:15px; flex:0 0 15px; color:var(--cyan); }
+body.light .meta-item{ background:rgba(255,255,255,.7); }
+
+/* بطاقة الفريق */
+.team-block{
+    margin-top:20px; padding:22px; border-radius:18px;
+    background:var(--panel); border:1px solid var(--line);
+    box-shadow:var(--shadow);
+}
+.team-top{
+    display:grid; grid-template-columns:1.1fr 1fr; gap:18px; align-items:center;
+    padding-bottom:18px; margin-bottom:18px; border-bottom:1px dashed var(--line);
+}
+.team-kicker{
+    display:block; font-family:var(--font-tech); font-size:10.5px; letter-spacing:2px;
+    color:var(--text-3); margin-bottom:5px;
+}
+.team-school h3{ font-size:19px; font-weight:900; line-height:1.45; }
+.team-school small{ display:block; margin-top:3px; font-size:12.8px; color:var(--text-3); }
+.team-track{
+    padding:14px 16px; border-radius:14px;
+    background:linear-gradient(120deg, rgba(34,211,238,.1), rgba(123,92,255,.13));
+    border:1px solid var(--line-strong);
+}
+.team-track b{ display:block; font-size:14.4px; font-weight:800; color:var(--cyan-2); line-height:1.6; }
+
+.team-members{ display:grid; grid-template-columns:repeat(auto-fit, minmax(min(220px,100%),1fr)); gap:12px; }
+.member{
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:3px;
+    padding:16px 13px; border-radius:14px;
+    background:rgba(255,255,255,.03); border:1px solid var(--line); transition:.25s;
+}
+body.light .member{ background:rgba(240,243,255,.75); }
+.member:hover{ border-color:var(--line-strong); transform:translateY(-3px); box-shadow:var(--glow); }
+.member-avatar{
+    width:44px; height:44px; margin-bottom:7px; border-radius:14px; display:grid; place-items:center;
+    font-family:var(--font-tech); font-size:18px; font-weight:800; color:#fff;
+    background:var(--grad); box-shadow:0 8px 20px rgba(123,92,255,.35);
+}
+.member b{ font-size:14.4px; font-weight:800; line-height:1.5; }
+.member small{ font-size:11.8px; color:var(--text-3); line-height:1.5; }
+.member.supervisor{ border-color:rgba(255,209,102,.4); background:rgba(255,209,102,.06); }
+.member.supervisor .member-avatar{
+    background:linear-gradient(140deg,#ffd166,#f0a500); color:#241a00;
+    box-shadow:0 8px 20px rgba(255,209,102,.3);
+}
+.member.supervisor small{ color:var(--yellow); font-weight:600; }
+
+.sidebar-school{
+    margin-top:6px; padding-top:8px; border-top:1px dashed var(--line);
+    font-size:11px; color:var(--text-3); line-height:1.6;
+}
+.footer-team{ margin-top:6px; font-size:12.6px; color:var(--text-3); }
+
 .pitch-path{
     display:grid; grid-template-columns:repeat(3,1fr) auto; gap:16px; align-items:center;
     margin-top:20px; padding:20px; border:1px dashed var(--line-strong); border-radius:18px;
@@ -811,6 +872,7 @@ body.light .m-example{ background:rgba(230,236,255,.65); }
 @media (max-width: 992px){
     .sidebar{ transform: var(--hide-x); box-shadow:0 0 60px rgba(0,0,0,.6); }
     .pitch-path{ grid-template-columns:1fr 1fr; }
+    .team-top{ grid-template-columns:1fr; }
     .path-actions{ grid-column:1 / -1; justify-content:flex-start; }
     body.nav-open .sidebar{ transform:none; }
     .main{ margin-inline-start:0; }
@@ -823,6 +885,11 @@ body.light .m-example{ background:rgba(230,236,255,.65); }
     .pitch-lead p{ font-size:15.2px; }
     .pitch-path{ grid-template-columns:1fr; }
     .pitch-card{ padding:19px 17px; }
+    .team-block{ padding:18px 16px; }
+    .team-members{ grid-template-columns:1fr 1fr; }
+    .member{ padding:14px 10px; }
+    .member-avatar{ width:40px; height:40px; font-size:16px; }
+    .member b{ font-size:13.2px; }
     .topbar-title{ display:none; }
     #themeBtn span{ display:none; }
     .hero-actions .btn{ width:100%; }

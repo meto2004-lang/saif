@@ -3,7 +3,12 @@
    ========================================================= */
 
 /* ============ 0) أدوات عامة ============ */
-let LANG = localStorage.getItem("qc-lang") || "ar";
+/* تخزين آمن: بعض المتصفحات تمنع localStorage على file:// أو في الوضع الخاص */
+const store = {
+    get(k, d = null) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* تجاهل */ } }
+};
+let LANG = store.get("qc-lang", "ar") || "ar";
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const t  = o => (o ? (o[LANG] || o.ar) : "");
@@ -45,26 +50,29 @@ function applyLang() {
 }
 $("#langBtn").addEventListener("click", () => {
     LANG = LANG === "ar" ? "en" : "ar";
-    localStorage.setItem("qc-lang", LANG);
+    store.set("qc-lang", LANG);
     applyLang();
 });
 
 /* ============ 2) الوضع الليلي / الفاتح ============ */
 const themeBtn = $("#themeBtn");
 function applyTheme() {
-    const light = localStorage.getItem("qc-theme") === "light";
+    const light = store.get("qc-theme", "dark") === "light";
     document.body.classList.toggle("light", light);
     $("#themeIcon").setAttribute("href", light ? "#ic-sun" : "#ic-moon");
 }
 themeBtn.addEventListener("click", () => {
-    localStorage.setItem("qc-theme", document.body.classList.contains("light") ? "dark" : "light");
+    store.set("qc-theme", document.body.classList.contains("light") ? "dark" : "light");
     applyTheme();
 });
 applyTheme();
 
 /* ============ 3) خلفية النجوم ============ */
 (function stars() {
-    const cv = $("#starsCanvas"), ctx = cv.getContext("2d");
+    const cv = $("#starsCanvas");
+    let ctx = null;
+    try { ctx = cv.getContext("2d"); } catch (e) { ctx = null; }
+    if (!ctx) return;
     let w, h, pts = [];
     function resize() {
         w = cv.width = innerWidth; h = cv.height = innerHeight;
@@ -103,26 +111,33 @@ $("#menuBtn").addEventListener("click", () => document.body.classList.toggle("na
 $("#navOverlay").addEventListener("click", () => document.body.classList.remove("nav-open"));
 $$(".nav-link").forEach(a => a.addEventListener("click", () => document.body.classList.remove("nav-open")));
 
-const secObserver = new IntersectionObserver(es => {
-    es.forEach(e => {
-        if (!e.isIntersecting) return;
-        const id = e.target.id;
-        $$(".nav-link").forEach(l => l.classList.toggle("active", l.dataset.target === id));
-        const act = $(`.nav-link[data-target="${id}"] span`);
-        if (act) {
-            const cur = $("#currentSection");
-            cur.dataset.ar = act.dataset.ar; cur.dataset.en = act.dataset.en;
-            cur.textContent = act.dataset[LANG];
-        }
-    });
-}, { rootMargin: "-45% 0px -50% 0px" });
-$$(".main .section").forEach(s => secObserver.observe(s));
+const HAS_IO = "IntersectionObserver" in window;
+if (HAS_IO) {
+    const secObserver = new IntersectionObserver(es => {
+        es.forEach(e => {
+            if (!e.isIntersecting) return;
+            const id = e.target.id;
+            $$(".nav-link").forEach(l => l.classList.toggle("active", l.dataset.target === id));
+            const act = $(`.nav-link[data-target="${id}"] span`);
+            if (act) {
+                const cur = $("#currentSection");
+                cur.dataset.ar = act.dataset.ar; cur.dataset.en = act.dataset.en;
+                cur.textContent = act.dataset[LANG];
+            }
+        });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    $$(".main .section").forEach(s => secObserver.observe(s));
+}
 
 /* ظهور العناصر عند التمرير */
-const revObserver = new IntersectionObserver(es => {
-    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); revObserver.unobserve(e.target); } });
-}, { threshold: .12 });
-$$("[data-reveal]").forEach(el => revObserver.observe(el));
+if (HAS_IO) {
+    const revObserver = new IntersectionObserver(es => {
+        es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); revObserver.unobserve(e.target); } });
+    }, { threshold: .12 });
+    $$("[data-reveal]").forEach(el => revObserver.observe(el));
+} else {
+    $$("[data-reveal]").forEach(el => el.classList.add("in"));
+}
 
 /* زر العودة للأعلى */
 const backTop = $("#backTop");
@@ -230,7 +245,9 @@ function sameState(a, b) {
     return true;
 }
 /* توليد رابط دائرة Quirk */
-const quirkUrl = cols => "https://algassert.com/quirk#circuit=" + encodeURIComponent(JSON.stringify({ cols }));
+const quirkUrl = (cols, bust = false) =>
+    "https://algassert.com/quirk" + (bust ? "?v=" + Date.now() : "") +
+    "#circuit=" + encodeURIComponent(JSON.stringify({ cols }));
 
 /* ============ 6) بطاقات المفاهيم + النافذة ============ */
 const ILLUS = {
@@ -443,8 +460,17 @@ function renderGates() {
 /* ============ 8) مختبر Quirk ============ */
 const frame = $("#quirkFrame");
 let currentExp = EXPERIMENTS[0].id;   /* التجربة المعروضة حالياً (لتُعاد عند تبديل اللغة) */
-function loadCircuit(cols) { frame.src = quirkUrl(cols); }
-function go(sel) { $(sel).scrollIntoView({ behavior: "smooth", block: "start" }); }
+let currentCols = EXPERIMENTS[0].cols;
+function loadCircuit(cols) {
+    if (!cols) return;
+    currentCols = cols;
+    /* ?v= يفرض إعادة تحميل كاملة: تغيير الـhash وحده لا يعيد قراءة الدائرة داخل Quirk */
+    frame.src = quirkUrl(cols, true);
+}
+function go(sel) {
+    const el = $(sel);
+    if (el && typeof el.scrollIntoView === "function") el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 function renderLab() {
     /* الدوائر الجاهزة */
@@ -488,7 +514,7 @@ function showExperiment(id) {
         </div>`;
     $("#expRun").onclick = () => loadCircuit(e.cols);
 }
-$("#reloadQuirk").addEventListener("click", () => { frame.src = frame.src; });
+$("#reloadQuirk").addEventListener("click", () => loadCircuit(currentCols));
 
 /* ============ 9) الأنشطة التعليمية ============ */
 $$("#actTabs .tab").forEach(b => b.onclick = () => {
@@ -508,7 +534,7 @@ function renderActivitiesStatic() {
         ["#a2Run span", "ابنِ الدائرة وتحقّق", "Build and check"],
         ["#a2InQuirk span", "افتح في Quirk", "Open in Quirk"],
         ["#a2Reset span", "إعادة", "Reset"],
-        ["#act-2 .act-head p", "اختر خطوتين لبناء الدائرة الكلاسيكية |00⟩ ← (|00⟩+|11⟩)/√2 ثم تحقّق من النتيجة.", "Pick two steps to build the classic circuit |00⟩ → (|00⟩+|11⟩)/√2 then check the result."],
+        ["#act-2 .act-head p", "اختر خطوتين لبناء دائرة بيل الكمية |00⟩ ← (|00⟩+|11⟩)/√2 ثم تحقّق من النتيجة.", "Pick two steps to build the quantum Bell circuit |00⟩ → (|00⟩+|11⟩)/√2 then check the result."],
         ["#act-3 .act-head p", "لكل مهمة اختر البوابة التي تحوّل الحالة الأولى إلى الحالة المستهدفة.", "For each task, pick the gate that transforms the initial state into the target state."],
         ["#act-4 .act-head p", "اسحب البوابات (أو انقر عليها ثم انقر الخانة) إلى الأسلاك لبلوغ الحالة المستهدفة.", "Drag gates (or click a gate then a slot) onto the wire to reach the target state."],
         ["#a3Next span", "المهمة التالية", "Next task"],
@@ -615,7 +641,7 @@ $("#a2InQuirk").onclick = () => { loadCircuit(a2Cols()); go("#lab"); };
 
 /* --- النشاط 3: اختر البوابة المناسبة --- */
 const A3 = { i: 0, done: false };
-const KEYS = { ar: ["أ", "ب", "ج"], en: ["A", "B", "C"] };
+const KEYS = { ar: ["أ", "ب", "ج", "د"], en: ["A", "B", "C", "D"] };
 function stateOf(lbl) {
     if (lbl === "|0⟩") return [[1, 0], [0, 0]];
     if (lbl === "|1⟩") return [[0, 0], [1, 0]];
@@ -901,3 +927,4 @@ a3Render();
 a4Render();
 renderQuiz();
 showExperiment(EXPERIMENTS[0].id);
+loadCircuit(EXPERIMENTS[0].cols);

@@ -76,6 +76,7 @@ body::before{ /* شبكة تقنية خفيفة */
         linear-gradient(rgba(123,92,255,.06) 1px, transparent 1px),
         linear-gradient(90deg, rgba(123,92,255,.06) 1px, transparent 1px);
     background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 85%);
     mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 85%);
 }
 body::after{ /* هالة ضوئية علوية */
@@ -282,7 +283,7 @@ body.light .float-chip{ background:rgba(255,255,255,.9); }
 @keyframes floatY{ 50%{ transform:translateY(-14px); } }
 
 /* ---------- 7) البطاقات ---------- */
-.cards-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr)); gap:20px; }
+.cards-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(min(290px,100%),1fr)); gap:20px; }
 .card{
     position:relative; overflow:hidden; cursor:pointer;
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
@@ -583,7 +584,7 @@ body.light .quiz-progress{ background:rgba(20,26,61,.09); }
 }
 
 /* ---------- 12) قسم المعلم ---------- */
-.teacher-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(430px,1fr)); gap:20px; }
+.teacher-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(min(430px,100%),1fr)); gap:20px; }
 .t-list{ display:flex; flex-direction:column; gap:10px; }
 .t-list li{ position:relative; padding-inline-start:26px; font-size:14.8px; color:var(--text-2); }
 .t-list li::before{

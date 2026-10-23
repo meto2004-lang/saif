@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-مولّد الملصق العلمي على قالب سيف الرسمي 2026.
+مولّد الملصق العلمي العربي على قالب سيف الرسمي 2026.
 
 المقاس: 36 × 48 بوصة طوليًا (914 × 1219 مم) — مطابق لأبعاد القالب حرفيًا.
 الخط المعتمد: IBM Plex Sans Arabic (Light / Regular / Medium / SemiBold / Bold).
 
-الاستخدام:
     python3 build_template_poster.py            # PDF فقط
     python3 build_template_poster.py --preview  # PDF + معاينات PNG/JPG
 
+للنسخة الإنجليزية: build_template_poster_en.py
 المتطلبات: pymupdf, qrcode, pillow
 """
 
@@ -17,41 +17,18 @@ import os
 import sys
 
 import pymupdf
-import qrcode
+
+import poster_kit as K
+from poster_kit import (BOX_BOOTH, BOX_FLAG, BOX_QR, CARD, FLAG_SVG, INK, LINE, MINT,
+                        MUTED, PANEL, SALMON, TEAL, Flow, cover, html, place_flag, rgb,
+                        text, make_qr)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE = os.path.join(HERE, "template", "SAIF-poster-template-2026.pdf")
-FONTS = os.path.join(HERE, "fonts", "ibm-plex")
-FLAG_SVG = os.path.join(HERE, "assets", "flag-sa.svg")
 OUT_PDF = os.path.join(HERE, "saif-poster-36x48.pdf")
 OUT_PNG = os.path.join(HERE, "preview-36x48.png")
 OUT_JPG = os.path.join(HERE, "saif-poster-36x48.jpg")
-QR_PNG = os.path.join(HERE, "assets", "qr-site.png")
 
-SITE = "https://meto2004-lang.github.io/saif/"
-
-INK = "#0E3F3C"
-TEAL = "#0F7C86"
-SALMON = "#C85C50"
-CREAM = "#F4F4E9"
-MINT = "#E7F0EB"
-LINE = "#D7E3DD"
-MUTED = "#5F716C"
-
-# --------------------------------------------------------------------- هندسة القالب
-CARD = (63.5, 268.1, 2528.5, 524.2)
-BOX_QR = (2200.4, 300.7, 2273.1, 373.4)
-BOX_BOOTH = (2299.8, 300.7, 2372.5, 373.4)
-BOX_FLAG = (2399.2, 300.7, 2502.8, 373.4)
-
-PANEL = {
-    "intro": ((63.5, 582.2, 1056.0, 1563.0), (96.8, 702.2, 1026.0, 1530.7)),
-    "method": ((1116.0, 582.2, 2528.1, 1563.0), (1146.8, 702.2, 2502.8, 1530.7)),
-    "results": ((63.5, 1620.9, 1398.0, 2601.7), (96.8, 1743.3, 1359.0, 2571.8)),
-    "innovation": ((1461.0, 1620.9, 2528.1, 2601.7), (1497.5, 1740.3, 2490.0, 2568.8)),
-    "conclusion": ((63.5, 2659.7, 1398.0, 3327.0), (96.8, 2780.9, 1359.0, 3294.0)),
-    "future": ((1461.0, 2659.7, 2528.1, 3327.0), (1497.5, 2779.1, 2490.0, 3292.1)),
-}
+K.set_direction("rtl")
 
 HEADINGS = {
     "intro": ("المقدمة", "INTRODUCTION"),
@@ -62,155 +39,12 @@ HEADINGS = {
     "future": ("العمل المستقبلي والمراجع", "FUTURE WORK & REFERENCES"),
 }
 
-FONT_FILES = {
-    "l": "IBMPlexSansArabic-Light.ttf",
-    "r": "IBMPlexSansArabic-Regular.ttf",
-    "m": "IBMPlexSansArabic-Medium.ttf",
-    "s": "IBMPlexSansArabic-SemiBold.ttf",
-    "b": "IBMPlexSansArabic-Bold.ttf",
-}
-
-CSS_BASE = """
-@font-face {font-family: pl; src: url(IBMPlexSansArabic-Light.ttf);}
-@font-face {font-family: pr; src: url(IBMPlexSansArabic-Regular.ttf);}
-@font-face {font-family: pm; src: url(IBMPlexSansArabic-Medium.ttf);}
-@font-face {font-family: ps; src: url(IBMPlexSansArabic-SemiBold.ttf);}
-@font-face {font-family: pb; src: url(IBMPlexSansArabic-Bold.ttf);}
-body {font-family: pr; font-size: 34px; line-height: 1.55; color: %s; direction: rtl;}
-b, strong {font-family: pb;}
-.box {background-color: %s; padding: 26px 30px 22px 30px;}
-.q {background-color: #FBF0EE; padding: 26px 30px 22px 30px;}
-""" % (INK, MINT)
-
-ARCH = pymupdf.Archive(FONTS)
-STATE = {"errors": [], "fonts": {}, "scratch": None}
-
-
-# --------------------------------------------------------------------- أدوات
-def rgb(h):
-    h = h.lstrip("#")
-    return tuple(int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
-
-
-def cover(page, rect, color=CREAM):
-    page.draw_rect(pymupdf.Rect(*rect), color=None, fill=rgb(color), width=0)
-
-
-def html(page, rect, body, extra_css="", align="right", direction="rtl", line_height=1.55,
-         tag="?", quiet=False):
-    r = pymupdf.Rect(*rect)
-    css = f"{CSS_BASE}\nbody{{line-height:{line_height};}}" + ("\n" + extra_css if extra_css else "")
-    # محرّك MuPDF يعامل text-align منطقيًا مع اتجاه الفقرة (RTL): نعكس القيمة لتطابق المقصود
-    visual = {"right": "left", "left": "right"}.get(align, align)
-    spare, scale = page.insert_htmlbox(
-        r, f'<div dir="{direction}" style="text-align:{visual};">{body}</div>',
-        css=css, archive=ARCH, scale_low=1
-    )
-    if spare < 0:
-        if not quiet:
-            STATE["errors"].append(f"[{tag}] فشل الرسم: الإطار {r.height:.0f}pt أقصر من النص")
-        return 0
-    used = r.height - spare
-    if scale < 0.999 and not quiet:
-        STATE["errors"].append(f"[{tag}] صُغِّر تلقائيًا ×{scale:.2f}")
-    if not quiet:
-        # نسجّل المساحة المرسومة فعليًا لاكتشاف تراكب الكتل لاحقًا
-        STATE.setdefault("boxes", []).append(
-            (pymupdf.Rect(r.x0, r.y0, r.x1, r.y0 + used), tag,
-             "".join(ch for ch in body if ch.isalnum() or ch in " ")[:28])
-        )
-    return used
-
-
-def measure(body, width, extra_css="", align="right", direction="rtl", line_height=1.55):
-    """يقيس ارتفاع الكتلة على صفحة مؤقتة بنفس عرض العمود."""
-    if STATE["scratch"] is None:
-        doc = pymupdf.open()
-        doc.new_page(width=3000, height=4000)
-        STATE["scratch"] = (doc, doc[0])
-    page = STATE["scratch"][1]
-    return html(page, (50, 50, 50 + width, 3950), body, extra_css, align, direction,
-                line_height, quiet=True)
-
-
-def text(page, x, baseline, s, size=20, weight="r", color=INK, anchor="left"):
-    if weight not in STATE["fonts"]:
-        path = os.path.join(FONTS, FONT_FILES[weight])
-        name = f"plex-{weight}"
-        page.insert_font(fontname=name, fontfile=path)
-        STATE["fonts"][weight] = (name, pymupdf.Font(fontfile=path))
-    name, fnt = STATE["fonts"][weight]
-    w = fnt.text_length(s, size)
-    if anchor == "right":
-        x -= w
-    elif anchor == "center":
-        x -= w / 2
-    page.insert_text((x, baseline), s, fontsize=size, fontname=name, color=rgb(color))
-    return w
-
-
-class Flow:
-    """تكديس عمودي: يقيس الكتل أولًا ثم يوزّع الفراغ بينها بالتساوي."""
-
-    def __init__(self, page, rect, gap=24, max_gap=110, vcenter=True):
-        self.page = page
-        self.rect = rect
-        self.gap = gap
-        self.max_gap = max_gap
-        self.vcenter = vcenter
-        self.blocks = []
-
-    def add(self, body, extra_css="", align="right", direction="rtl", line_height=1.55, tag="block"):
-        self.blocks.append((body, extra_css, align, direction, line_height, tag))
-        return self
-
-    def render(self):
-        x0, y0, x1, y1 = self.rect
-        width = x1 - x0
-        heights = [measure(b[0], width, b[1], b[2], b[3], b[4]) for b in self.blocks]
-        total = sum(heights)
-        n = len(self.blocks)
-        avail = y1 - y0
-        gap = self.gap
-        if n > 1 and avail > total:
-            gap = min(self.max_gap, self.gap + (avail - total - self.gap * (n - 1)) / (n - 1))
-            gap = max(self.gap, gap)
-        stack = total + gap * (n - 1)
-        y = y0 + (avail - stack) / 2 if (self.vcenter and avail > stack) else y0
-        if avail < stack and not self.vcenter:
-            y = y0
-        for (body, css, align, direction, lh, tag), h in zip(self.blocks, heights):
-            html(self.page, (x0, y, x1, y + h + 2), body, css, align, direction, lh, tag)
-            y += h + gap
-        if stack > avail + 1:
-            STATE["errors"].append(f"[{self.blocks[0][5]}] المحتوى أطول من اللوحة: {stack:.0f} > {avail:.0f}")
-        return stack
-
-
-def make_qr(path, data=SITE, size=1000):
-    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=10, border=1)
-    qr.add_data(data)
-    qr.make(fit=True)
-    qr.make_image(fill_color=INK, back_color="white").convert("RGB").resize(
-        (size, size), resample=0).save(path)
-
-
-_FLAG = None
-
-
-def place_flag(page, rect):
-    global _FLAG
-    if _FLAG is None:
-        svg = pymupdf.open(FLAG_SVG)
-        _FLAG = pymupdf.open("pdf", svg.convert_to_pdf())
-    page.show_pdf_page(pymupdf.Rect(*rect), _FLAG, 0)
-
 
 # --------------------------------------------------------------------- بطاقة العنوان
 def build_header(page):
     cover(page, (CARD[0] + 0.6, CARD[1] + 0.6, CARD[2] - 0.6, CARD[3] - 0.6))
 
-    # ---------- إعادة رسم إطارات الخانات الثلاث (غطاء البطاقة يمحوها لأنها مرسومة قبله)
+    # إعادة رسم إطارات الخانات الثلاث (غطاء البطاقة يمحوها لأنها مرسومة قبله)
     for box in (BOX_QR, BOX_BOOTH, BOX_FLAG):
         page.draw_rect(pymupdf.Rect(*box), color=rgb(INK), fill=None, width=0.75)
 
@@ -219,7 +53,7 @@ def build_header(page):
 
     html(page, (96, 300, 470, 408),
          '<span style="font-family:pb;font-size:76px;color:%s;">كم</span>' % INK,
-         align="left", direction="rtl", line_height=1.25, tag="wordmark")
+         align="left", line_height=1.25, tag="wordmark")
 
     html(page, (96, 402, 1010, 440),
          "مدرسة الرواد الثانوية الأهلية — حي الازدهار — مدينة الرياض",
@@ -243,7 +77,7 @@ def build_header(page):
     inner_w = BOX_FLAG[2] - BOX_FLAG[0] - 14
     inner_h = BOX_FLAG[3] - BOX_FLAG[1] - 14
     fh = inner_w * 2 / 3
-    if fh > inner_h:                       # احترام نسبة العلم مع البقاء داخل الإطار
+    if fh > inner_h:
         fh = inner_h
         inner_w = fh * 3 / 2
     fx = BOX_FLAG[0] + (BOX_FLAG[2] - BOX_FLAG[0] - inner_w) / 2
@@ -251,14 +85,14 @@ def build_header(page):
     place_flag(page, (fx, fy, fx + inner_w, fy + fh))
 
     # ---------- رمز QR
-    make_qr(QR_PNG)
+    make_qr()
     page.insert_image(pymupdf.Rect(BOX_QR[0] + 8, BOX_QR[1] + 8, BOX_QR[2] - 8, BOX_QR[3] - 8),
-                      filename=QR_PNG)
+                      filename=K.QR_PNG)
 
     text(page, (BOX_BOOTH[0] + BOX_BOOTH[2]) / 2, BOX_BOOTH[3] - 16, "—", 30, "l", MUTED, "center")
     text(page, (BOX_BOOTH[0] + BOX_BOOTH[2]) / 2, BOX_BOOTH[3] - 42, "Booth", 12, "l", MUTED, "center")
 
-    # ---------- العنوان والقائمون عليه (العمود ينتهي عند 2005 ليفسح حقل ID)
+    # ---------- العنوان والقائمون عليه
     TX1 = 2005
     html(page, (1040, 278, TX1, 424),
          '<span style="font-family:pb;font-size:50px;color:%s;">«كم» منصة عربية تجعل الحوسبة الكمية '
@@ -281,7 +115,6 @@ def build_header(page):
          '<span style="font-family:pm;font-size:19px;">الأستاذ محمد السيد متولى — معلم الحاسب الآلي</span>'
          % MUTED, line_height=1.25, tag="supervisor")
 
-    # ---------- حقل رقم الطالب في موضعه الأصلي من القالب (أسفل خانة العلم)
     # حقل رقم الطالب: على سطر المشرف نفسه، في أقصى اليمين
     html(page, (1880, 470, 2145, 500),
          '<span style="font-family:pl;font-size:18px;color:%s;">ID: ____________</span>' % MUTED,
@@ -341,7 +174,7 @@ def panel_method(page):
     bar_h = 132
     h = (y1 - bar_h - 52) - top
     for i, (num, title, txt) in enumerate(steps):
-        cx = x1 - (i + 1) * w - i * gap
+        cx = K.col_x(x0, x1, i, w, gap)
         page.draw_rect(pymupdf.Rect(cx, top, cx + w, top + h), color=rgb(LINE),
                        fill=rgb("#FFFFFF"), width=1.4, radius=0.03)
         html(page, (cx + 26, top + 26, cx + w - 26, top + 104),
@@ -352,7 +185,7 @@ def panel_method(page):
              f'<span style="font-size:30px;line-height:1.55;">{txt}</span>',
              line_height=1.55, tag=f"step-body-{i}")
 
-        # ---------- رسم توضيحي صغير أسفل كل بطاقة
+        # رسم توضيحي صغير أسفل كل بطاقة
         iy = top + h - 190
         icon_cx = cx + w / 2
         if i == 0:      # تحليل: ثلاثة أعمدة مقارنة
@@ -396,7 +229,7 @@ def panel_results(page):
     h = 178
     for i, (num, label) in enumerate(stats):
         col, row = i % 3, i // 3
-        cx = x1 - (col + 1) * w - col * gap
+        cx = K.col_x(x0, x1, col, w, gap)
         cy = y0 + row * (h + gap)
         page.draw_rect(pymupdf.Rect(cx, cy, cx + w, cy + h), color=rgb(LINE), fill=rgb("#FFFFFF"),
                        width=1.4, radius=0.04)
@@ -454,7 +287,6 @@ def panel_results(page):
         text(page, bx1, ry + 23, label, 24, "m", MUTED, "right")
         ry += 42
 
-    # تفسير واحد فقط أسفل الأشرطة (كان هنا سطران متراكبان بنفس المعنى)
     html(page, (x0, ry + 26, x1, y1),
          '<div style="font-size:26px;line-height:1.45;"><b>ماذا تعني النتيجة؟</b> لو أعدنا التجربة '
          'مئة مرة، ستأتي «00» نحو خمسين مرة و«11» نحو خمسين مرة، ولا تظهر «01» أو «10» أبدًا '
@@ -474,15 +306,14 @@ def panel_innovation(page):
     ]
     gap = 18
     body_css = "body{font-size:31px;}"
-    heights = [measure(f'<div style="font-size:31px;line-height:1.45;">{b}</div>', W, body_css,
-                       line_height=1.45) for b in bullets]
+    heights = [K.measure(f'<div style="font-size:31px;line-height:1.45;">{b}</div>', W, body_css,
+                         line_height=1.45) for b in bullets]
     y = y0
     for b, h in zip(bullets, heights):
         html(page, (x0, y, x1, y + h + 2), f'<div style="font-size:31px;line-height:1.45;">{b}</div>',
              body_css, line_height=1.45, tag="inn-bullet")
         y += h + gap
 
-    # ---------- صندوق "الفرق في البناء" في الفراغ بين النقاط والجدول
     table_top = y1 - 5 * 74
     box_top = y + 6
     box_bottom = table_top - 26
@@ -490,10 +321,10 @@ def panel_innovation(page):
         page.draw_rect(pymupdf.Rect(x0, box_top, x1, box_bottom), color=None, fill=rgb(MINT), width=0)
         page.draw_rect(pymupdf.Rect(x0, box_top, x0 + 7, box_bottom), color=None, fill=rgb(TEAL), width=0)
         inner = (x0 + 34, box_top + 22, x1 - 30, box_bottom - 22)
-        hh = measure('<div style="font-size:30px;line-height:1.45;"><b>الفرق في البناء</b>'
-                     '<div style="margin-top:10px;font-size:29px;">الطالب لا يقرأ عن التراكب ولا يحفظ '
-                     'صيغته… بل يرى الاحتمالات تتحرك على الشاشة كلما غيّر البوابة.</div></div>',
-                     inner[2] - inner[0], line_height=1.45)
+        hh = K.measure('<div style="font-size:30px;line-height:1.45;"><b>الفرق في البناء</b>'
+                       '<div style="margin-top:10px;font-size:29px;">الطالب لا يقرأ عن التراكب ولا يحفظ '
+                       'صيغته… بل يرى الاحتمالات تتحرك على الشاشة كلما غيّر البوابة.</div></div>',
+                       inner[2] - inner[0], line_height=1.45)
         yy = inner[1] + max(0, (inner[3] - inner[1] - hh) / 2)
         html(page, (inner[0], yy, inner[2], yy + hh + 4),
              '<div style="font-size:30px;line-height:1.45;"><b>الفرق في البناء</b>'
@@ -501,13 +332,12 @@ def panel_innovation(page):
              'صيغته… بل يرى الاحتمالات تتحرك على الشاشة كلما غيّر البوابة.</div></div>',
              line_height=1.45, tag="inn-box")
 
-    # ---------- جدول مقارنة مع المحاكيات المتاحة
+    # جدول مقارنة مع المحاكيات المتاحة
     c_key = W * 0.19
     c_them = W * 0.27
     c_ours = W - c_key - c_them
     rh = 74
-    table_h = rh * 5
-    ty = y1 - table_h - (y1 - y - 10) * 0.0   # الجدول يلتصق بأسفل اللوحة
+    ty = y1 - rh * 5
 
     page.draw_rect(pymupdf.Rect(x0, ty, x1, ty + rh), color=None, fill=rgb(INK), width=0)
     html(page, (x1 - c_ours - 16, ty + 12, x1 - 16, ty + rh - 10),
@@ -539,7 +369,6 @@ def panel_innovation(page):
              line_height=1.25, tag=f"cmp-them-{i}")
         ry += rh
 
-    # إبراز عمودنا
     page.draw_rect(pymupdf.Rect(x1 - c_ours, ty, x1 - c_ours, ry), color=rgb(TEAL), fill=None, width=3)
 
 
@@ -588,7 +417,7 @@ def panel_future(page):
     qy0 = y0 + 40
     page.draw_rect(pymupdf.Rect(qx0 - 12, qy0 - 10, x1 + 12, qy0 + qr_w + 12),
                    color=rgb(LINE), fill=rgb("#FFFFFF"), width=1.4, radius=0.03)
-    page.insert_image(pymupdf.Rect(qx0, qy0, x1, qy0 + qr_w), filename=QR_PNG)
+    page.insert_image(pymupdf.Rect(qx0, qy0, x1, qy0 + qr_w), filename=K.QR_PNG)
     html(page, (qx0 - 40, qy0 + qr_w + 14, x1 + 10, qy0 + qr_w + 92),
          '<span style="font-family:pm;font-size:21px;">امسح الرمز لزيارة المنصة</span>',
          align="center", line_height=1.25, tag="qr-label")
@@ -597,21 +426,8 @@ def panel_future(page):
 
 # --------------------------------------------------------------------- الرئيسية
 def main():
-    doc = pymupdf.open(TEMPLATE)
-    page = doc[0]
-
-    for im in page.get_images(full=True):
-        if im[0] == 95:
-            page.delete_image(im[0])
-
-    zones = [CARD] + [(c[0], c[1], c[2], ct[3]) for c, ct in PANEL.values()]
-    for z in zones:
-        page.add_redact_annot(pymupdf.Rect(*z), fill=None)
-    page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE,
-                          graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,
-                          text=pymupdf.PDF_REDACT_TEXT_REMOVE)
-
-    page.insert_link({"kind": pymupdf.LINK_URI, "from": pymupdf.Rect(375, 108, 1026, 180), "uri": SITE})
+    doc = pymupdf.open(K.TEMPLATE)
+    page = K.prepare_page(doc)
 
     build_header(page)
     build_headings(page)
@@ -634,47 +450,9 @@ def main():
         "keywords": "كم, Quantum Learning Lab, SAIF 2026, الحوسبة الكمية",
         "creator": "IBM Plex Sans Arabic",
     })
-    try:
-        doc.subset_fonts(verbose=False)   # يقلّص الخطوط المضمّنة إلى المحارف المستخدمة
-    except Exception:
-        pass
-    doc.save(OUT_PDF, garbage=4, deflate=True, deflate_images=True, clean=True)
-    print(f"✓ {OUT_PDF}  ({os.path.getsize(OUT_PDF) / 1024:.0f} KB، "
-          f"{page.rect.width / 72:.0f}×{page.rect.height / 72:.0f} بوصة)")
 
-    # ---------- فحص تراكب كتل النص (يمنع تكرار خلل «سطرين فوق بعضهما»)
-    overlaps = []
-    boxes = STATE.get("boxes", [])
-    for i, (r1, t1, s1) in enumerate(boxes):
-        for r2, t2, s2 in boxes[i + 1:]:
-            inter = pymupdf.Rect(r1) & pymupdf.Rect(r2)
-            if inter.is_empty:
-                continue
-            a = inter.width * inter.height
-            smallest = min(r1.width * r1.height, r2.width * r2.height)
-            if smallest > 0 and a / smallest > 0.25:
-                overlaps.append(f"[{t1}] ↔ [{t2}] تراكب {a / smallest:.0%}")
-
-    if STATE["errors"]:
-        print("\n⚠ ملاحظات:")
-        for e in STATE["errors"]:
-            print("   ", e)
-    else:
-        print("✓ كل الكتل داخل أطرها بلا تصغير تلقائي")
-
-    if overlaps:
-        print(f"\n⚠ تراكب نصوص: {len(overlaps)}")
-        for o in overlaps:
-            print("   ", o)
-    else:
-        print("✓ لا تراكب بين كتل النص")
-
-    if "--preview" in sys.argv:
-        d2 = pymupdf.open(OUT_PDF)
-        d2[0].get_pixmap(dpi=40).save(OUT_PNG)
-        pix = d2[0].get_pixmap(dpi=150)
-        pix.save(OUT_JPG, jpg_quality=88)
-        print(f"✓ {OUT_PNG}\n✓ {OUT_JPG}  ({os.path.getsize(OUT_JPG) / 1024 / 1024:.1f} MB)")
+    K.save(doc, page, OUT_PDF, OUT_PNG, OUT_JPG,
+           preview="--preview" in sys.argv, lang="ar")
 
 
 if __name__ == "__main__":

@@ -189,14 +189,14 @@ const GATES = [
     {
         id: "Z", sym: "Z",
         name: { ar: "بوابة Z (الطور)", en: "Z Gate (Phase)" },
-        func: { ar: "تُغيّر إشارة |1⟩ إلى −|1⟩ وتخلي |0⟩ كما هي — تُسمى بوابة الطور (نصف دورة حول محور Z).", en: "Flips the sign of |1⟩ to −|1⟩ and leaves |0⟩ alone — a phase gate (half-turn about Z)." },
+        func: { ar: "تُغيّر إشارة |1⟩ إلى −|1⟩ وتُبقي |0⟩ كما هي — تُسمى بوابة الطور (نصف دورة حول محور Z).", en: "Flips the sign of |1⟩ to −|1⟩ and leaves |0⟩ alone — a phase gate (half-turn about Z)." },
         example: { ar: "H ثم Z على |0⟩: تحصل على |−⟩ = (|0⟩−|1⟩)/√2 وقيسه للتأكد.", en: "H then Z on |0⟩ gives |−⟩ = (|0⟩−|1⟩)/√2 — measure to confirm." },
         matrix: [["1", "0"], ["0", "−1"]],
         cols: [["H"], ["Z"], ["Measure"]]
     },
     {
         id: "H", sym: "H",
-        name: { ar: "بوابة هادامارд H", en: "Hadamard Gate (H)" },
+        name: { ar: "بوابة هادامارد H", en: "Hadamard Gate (H)" },
         func: { ar: "بوّابة التراكب: تحوّل |0⟩ إلى |+⟩ و|1⟩ إلى |−⟩، أي تجعل الكيوبت في احتمالية متساوية 50/50.", en: "The superposition gate: |0⟩ → |+⟩ and |1⟩ → |−⟩, giving a 50/50 measurement chance." },
         example: { ar: "ضع H ثم Measure في Quirk وكرّر القياس: نحو نصف النتائج 0 ونصفها 1.", en: "Put H then Measure in Quirk and shoot: roughly half the results are 0 and half are 1." },
         matrix: [["1/√2", "1/√2"], ["1/√2", "−1/√2"]],
@@ -229,8 +229,8 @@ const GATES = [
     {
         id: "SWAP", sym: "⇄",
         name: { ar: "بوابة SWAP (التبديل)", en: "SWAP Gate" },
-        func: { ar: "تبديلاً حقيقياً بين حالتَي كيوبتين: |a,b⟩ ← |b,a⟩، وتُبنى من ثلاث بوابات CNOT في الدوائر الفيزيائية.", en: "Actually swaps two qubits: |a,b⟩ → |b,a⟩; in hardware it is built from three CNOTs." },
-        example: { ar: "ضع X على السلك الأول ثم SWAP: ستنتقل القفزة إلى السلك الثاني، أي تبادلاً للبيانات.", en: "Put X on the first wire then SWAP: the flip moves to the second wire — data exchange." },
+        func: { ar: "تُبدّل حالتَي كيوبتين: |a,b⟩ ← |b,a⟩، وتُبنى من ثلاث بوابات CNOT في الدوائر الفيزيائية.", en: "Actually swaps two qubits: |a,b⟩ → |b,a⟩; in hardware it is built from three CNOTs." },
+        example: { ar: "ضع X على السلك الأول ثم SWAP: ستنتقل القفزة إلى السلك الثاني، أي تبادلٌ للبيانات.", en: "Put X on the first wire then SWAP: the flip moves to the second wire — data exchange." },
         matrix: [["1 0 0 0", "0 0 1 0"], ["0 1 0 0", "0 0 0 1"]],
         cols: [["X", 1], ["Swap", "Swap"], ["Measure", "Measure"]]
     }
@@ -488,7 +488,7 @@ const PROJECTS = [
         icon: "ic-target",
         title: { ar: "مُولّد أرقام عشوائية كمّي", en: "Quantum Random Number Generator" },
         en: "QRNG",
-        desc: { ar: "استخدم تراكب البوابة H وقياسات متكررة لتوليد سلسلة ثنائية عشوائية حقيقية، ثم قارن توزيعها بتوزيع مولّد شجري (Pseudo Random).",
+        desc: { ar: "استخدم تراكب البوابة H وقياسات متكررة لتوليد سلسلة ثنائية عشوائية حقيقية، ثم قارن توزيعها بتوزيع مولّد شبه عشوائي (Pseudo Random).",
                 en: "Use H superposition and repeated shots to produce a real random bit string, then compare it with a pseudo-random (tree) generator." },
         steps: [
             { ar: "ابنِ دائرة: H ثم Measure على كيوبت واحد.", en: "Build: H then Measure on one qubit." },

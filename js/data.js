@@ -73,7 +73,7 @@ const CONCEPTS = [
               en: "Superposition means both states exist with probability weights. The H gate creates it: H|0⟩ = (|0⟩+|1⟩)/√2, called the |+⟩ state." },
             { ar: "من جهة رياضية المعاملات تُجمع مثل الموجات، وقد يتداخل إيجاباً (تعزيز) أو سلباً (إلغاء). هذا التداخل هو ما يجعل بعض الخوارزميات الكمية فعّالة.",
               en: "Amplitudes add like waves and can interfere constructively (boost) or destructively (cancel). This interference is what makes quantum algorithms effective." },
-            { ar: "التراكب لا يعني «الحالة 0 و1 معاً بمعني» بل معاملات فيزيائية؛ فعند القياس تظهر النتيجة دائماً 0 أو 1 فقط، أبداً رقماً كسرياً.",
+            { ar: "التراكب لا يعني «الحالة 0 و1 معاً بمعنى حرفي» بل معاملات فيزيائية؛ فعند القياس تظهر النتيجة دائماً 0 أو 1 فقط، أبداً رقماً كسرياً.",
               en: "Superposition does not mean '0 and 1 at once' literally; it means amplitudes. Measurement always yields 0 or 1, never a fraction." }
         ],
         points: [
@@ -97,7 +97,7 @@ const CONCEPTS = [
         long: [
             { ar: "التشابك حالة كمية لا تُحلَّل إلى حالتين مستقلين. أشهر مثال هي حالة بيل: |00⟩+|11⟩ فوق √2، أي أن الكيوبتين إما 00 أو 11 لكن لا نعرف أيهما قبل القياس.",
               en: "Entanglement is a joint state that cannot be split into independent states. The Bell state (|00⟩+|11⟩)/√2 means both qubits are 00 or 11 together, unknown before measurement." },
-            { ar: "تُبنى ببوابة H على كيوبت ثم بوابة CNOT بينهما. عند قياس الأول نعرف الثاني فوراً؛ وهذه «العملاء» لا تنقل معلومات بنفس السرعة لأن النتيجة عشوائية.",
+            { ar: "تُبنى ببوابة H على كيوبت ثم بوابة CNOT بينهما. عند قياس الأول نعرف الثاني فوراً؛ وهذا «التأثير الشبحي» لا ينقل معلومات بنفس السرعة لأن النتيجة عشوائية.",
               en: "It is built with H on one qubit followed by CNOT. Measuring the first reveals the second instantly; this 'spooky action' cannot send information faster than light because results are random." },
             { ar: "التشابك أساس لصالات القياس (Quantum Teleportation) وتكرار الأخطاء الكمية والحوسبة الموزعة.",
               en: "Entanglement underpins teleportation, quantum error correction and distributed computing." }
@@ -208,7 +208,7 @@ const GATES = [
         func: { ar: "تدور حول محور Z بمقدار 90°: تحوّل |+⟩ إلى |i⟩ أي تضيف طور i = e^{iπ/2} على الحالة |1⟩.", en: "A 90° rotation about Z: it turns |+⟩ into |i⟩, adding phase i = e^{iπ/2} to |1⟩." },
         example: { ar: "H ثم S: افتح دائرة بيل بترتيب مختلف ولاحظ تغيّر لوحة القياس.", en: "H then S: open a Bell-like circuit in a different order and watch the display change." },
         matrix: [["1", "0"], ["0", "i"]],
-        cols: [["H"], ["S"], ["Measure"]]
+        cols: [["H"], ["Z^½"], ["Measure"]]
     },
     {
         id: "T", sym: "T",
@@ -242,7 +242,7 @@ const PRESETS = [
     { id: "h",  label: { ar: "بوابة H", en: "H Gate" }, tag: "H",  cols: [["H"], ["Measure"]] },
     { id: "z",  label: { ar: "بوابة Z", en: "Z Gate" }, tag: "Z",  cols: [["H"], ["Z"], ["Measure"]] },
     { id: "cx", label: { ar: "بوابة CNOT", en: "CNOT Gate" }, tag: "CX", cols: [["H"], ["•", "X"], ["Measure", "Measure"]] },
-    { id: "bell",label: { ar: "حالة بيل Bell State", en: "Bell State" }, tag: "Bell", cols: [["H"], ["•", "X"], ["Measure", "Measure"], [1, "BlochSphere"]] }
+    { id: "bell",label: { ar: "حالة بيل Bell State", en: "Bell State" }, tag: "Bell", cols: [["H"], ["•", "X"], ["Measure", "Measure"], [1, "Bloch"]] }
 ];
 
 /* ---------- تجارب مختبر Quirk ---------- */
@@ -324,7 +324,7 @@ const EXPERIMENTS = [
         en: "SWAP",
         cols: [["X", 1], ["Swap", "Swap"], ["Measure", "Measure"]],
         theory: {
-            ar: "نبعّث X على السلك الأول فقط، ثم نطبّق SWAP لنقل الحالة بين السلكين.",
+            ar: "نطبّق X على السلك الأول فقط، ثم نطبّق SWAP لنقل الحالة بين السلكين.",
             en: "We apply X only to the first wire, then SWAP to move the state between wires."
         },
         goal: {
@@ -418,7 +418,7 @@ const QUIZ = [
       a: 1, e: { ar: "البت Bit يأخذ قيمتين فقط: 0 أو 1.", en: "A bit has only two values: 0 or 1." } },
     { q: { ar: "ما الوحدة الأساسية في الحوسبة الكمية؟", en: "What is the basic unit of quantum computing?" },
       o: [{ ar:"البايت", en:"Byte" }, { ar:"الصفحة", en:"Page" }, { ar:"الكيوبت", en:"Qubit" }, { ar:"المسار", en:"Track" }],
-      a: 2, e: { ar: "الكيوبt هو النسخة الكمية من البت.", en: "The qubit is the quantum version of the bit." } },
+      a: 2, e: { ar: "الكيوبت هو النسخة الكمية من البت.", en: "The qubit is the quantum version of the bit." } },
     { q: { ar: "أي حالة لا يمكن أن يأخذها البت التقليدي؟", en: "Which state can a classical bit NOT take?" },
       o: [{ ar:"0", en:"0" }, { ar:"1", en:"1" }, { ar:"التراكب (0 و1 معاً)", en:"Superposition (0 and 1)" }, { ar:"لا شيء مما سبق", en:"None of these" }],
       a: 2, e: { ar: "التراكب ميزة كميّة خاصة بالكيوبت.", en: "Superposition is unique to qubits." } },
@@ -465,7 +465,7 @@ const QUIZ = [
     { q: { ar: "بوابة T تضيف طوراً مقداره:", en: "The T gate adds a phase of:" },
       o: [{ ar:"π/2", en:"π/2" }, { ar:"π/4", en:"π/4" }, { ar:"π", en:"π" }, { ar:"π/8", en:"π/8" }],
       a: 1, e: { ar: "T تدور 45° = π/4 حول Z.", en: "T rotates 45° = π/4 about Z." } },
-    { q: { ar: "بوابة SWAP تقوم على:", en: "The SWAP gate acts on:" },
+    { q: { ar: "بوابة SWAP تعمل على:", en: "The SWAP gate acts on:" },
       o: [{ ar:"كيوبت واحد", en:"One qubit" }, { ar:"كيوبتين", en:"Two qubits" }, { ar:"ثلاثة كيوبتات", en:"Three qubits" }, { ar:"لا شيء", en:"Nothing" }],
       a: 1, e: { ar: "|a,b⟩ ← |b,a⟩ أي تبديل بين سلكين.", en: "|a,b⟩ ← |b,a⟩, exchanging two wires." } },
     { q: { ar: "أي مما يلي ليس بوابة كميّة؟", en: "Which of these is NOT a quantum gate?" },
@@ -479,7 +479,7 @@ const QUIZ = [
           { ar:"لأنه يحلّ بعض المشكلات (البحث، المحاكاة) بشكل عملي تعذّر حله كلاسيكياً", en:"It solves some problems (search, simulation) that are intractable classically" },
           { ar:"لأنه يستهلك طاقة أقل فقط", en:"It only uses less power" },
           { ar:"لأنه لا يحتاج برمجة", en:"It needs no programming" }],
-      a: 1, e: { ar: "الكمية ليس بديلاً عاماً للحاسب، بل أداة لفئة معينة من المشكلات.", en:"Quantum is not a general replacement, but a tool for a class of problems." } }
+      a: 1, e: { ar: "الحوسبة الكمية ليست بديلاً عاماً للحاسب، بل أداة لفئة معينة من المشكلات.", en:"Quantum is not a general replacement, but a tool for a class of problems." } }
 ];
 
 /* ---------- المشاريع ---------- */
@@ -555,7 +555,7 @@ const WORKSHEETS = [
     { id:"w1", title:{ ar:"ورقة عمل 1: المفاهيم الأساسية", en:"Worksheet 1: Core Concepts" },
       sub:{ ar:"مفاضلة بت/كيوبت + تراكب + تشابك", en:"Bit/qubit + superposition + entanglement" },
       body: [
-        { t:"h", ar:"أولأسئلة: عرّف المصطلحات", en:"Part A: Define the terms" },
+        { t:"h", ar:"أولاً: عرّف المصطلحات", en:"Part A: Define the terms" },
         { t:"lines", n:4 },
         { t:"q", ar:"1) اكتب معادلة الحالة الكمّية لكيوبت واحد وفسّر معناها.", en:"1) Write the state equation of one qubit and explain it." },
         { t:"q", ar:"2) ما الفرق بين البت والكيوبت؟ مثالان.", en:"2) Difference between bit and qubit? Two examples." },
@@ -598,7 +598,7 @@ const WORKSHEETS = [
 ];
 
 const ASSESSMENT = [
-    { ar:"عرّف الكيوبt وقارنه بالبت في ثلاثة أسطر.", en:"Define the qubit and compare it with the bit in three lines." },
+    { ar:"عرّف الكيوبت وقارنه بالبت في ثلاثة أسطر.", en:"Define the qubit and compare it with the bit in three lines." },
     { ar:"اكتب معادلة الحالة الكمّية وحدّد المعاملات.", en:"Write the quantum state equation and identify the amplitudes." },
     { ar:"ماذا يحدث للكيوبت عند القياس؟ ولماذا؟", en:"What happens to a qubit when measured? Why?" },
     { ar:"اذكر خطوتين لبناء حالة بيل مع رسم الدائرة.", en:"Give two steps to build a Bell state with the circuit drawn." },
@@ -626,7 +626,7 @@ const CLASS_ACTIVITIES = [
 /* ---------- المساعد التعليمي: قاعدة المعرفة ---------- */
 const AI_KB = [
     { k:["كيوبت","qubit","كيوبتات","quantum bit","الكيوبت"],
-      a:{ ar:"الكيوبt هو وحدة الحوسبة الكمية: يُكتب |ψ⟩ = α|0⟩ + β|1⟩، أي أنه يحمل تراكباً بين الصفر وال الواحد حتى لحظة القياس، واحتمال كل نتيجة = مربع المقدار للمعامل (|α|² و |β|²).\nجرّب: ضع بوابة H على كيوبت واقس مراراً في Quirk.",
+      a:{ ar:"الكيوبت هو وحدة الحوسبة الكمية: يُكتب |ψ⟩ = α|0⟩ + β|1⟩، أي أنه يحمل تراكباً بين الصفر والواحد حتى لحظة القياس، واحتمال كل نتيجة = مربع المقدار للمعامل (|α|² و |β|²).\nجرّب: ضع بوابة H على كيوبت وقِس مراراً في Quirk.",
           en:"A qubit is written |ψ⟩ = α|0⟩ + β|1⟩: it holds a superposition of 0 and 1 until measured, and each outcome's probability is the squared magnitude of its amplitude (|α|², |β|²).\nTry: put an H gate on a qubit and measure repeatedly in Quirk." },
       exp:{ name:{ar:"تجربة: تراكب مع H", en:"Experiment: H superposition"}, cols:[["H"],["Measure"]] } },
 
@@ -660,7 +660,7 @@ const AI_KB = [
           en:"Gate Z changes the sign, not the value: |1⟩ → −|1⟩ while |0⟩ stays. It is a phase gate, crucial for interference. Measurement probabilities stay the same; only the phase changes." },
       exp:{ name:{ar:"تجربة: Z بعد H", en:"Experiment: Z after H"}, cols:[["H"],["Z"],["Measure"]] } },
 
-    { k:["swab","swap","تبديل"],
+    { k:["swap","تبديل"],
       a:{ ar:"SWAP تبديل حقيقي بين كيوبتين: |a,b⟩ ← |b,a⟩. في الدوائر الفيزيائية تُبنى من ثلاث CNOT. استخدمها لنقل «القفزة» من سلك إلى آخر دون نسخ.",
           en:"SWAP truly exchanges two qubits: |a,b⟩ → |b,a⟩. Hardware builds it from three CNOTs. Use it to move a flip between wires without copying." },
       exp:{ name:{ar:"تجربة: SWAP", en:"Experiment: SWAP"}, cols:[["X",1],["Swap","Swap"],["Measure","Measure"]] } },
@@ -671,7 +671,7 @@ const AI_KB = [
       exp:{ name:{ar:"ابدأ بتجربة بيل", en:"Start with Bell"}, cols:[["H"],["•","X"],["Measure","Measure"]] } },
 
     { k:["فرق","الفرق بين","comparing","البت والكيوبت","classic","تقليدي"],
-      a:{ ar:"الفرق الجوهري: البت قيمة واحدة ثابتة (0 أو 1)، الكيوبt يحمل تراكباً بأطوار. n بت ← حالة واحدة، n كيوبt ← 2ⁿ حالة. لكن الكيوبت لا يُنسخ ويتأثر بالتشويش، فالكمية ليست «أسرع في كل شيء» بل في فئات معينة من المشكلات.",
+      a:{ ar:"الفرق الجوهري: البت قيمة واحدة ثابتة (0 أو 1)، الكيوبت يحمل تراكباً بأطوار. n بت ← حالة واحدة، n كيوبت ← 2ⁿ حالة. لكن الكيوبت لا يُنسخ ويتأثر بالتشويش، فالكمية ليست «أسرع في كل شيء» بل في فئات معينة من المشكلات.",
           en:"Core difference: a bit is one fixed value (0 or 1); a qubit carries superposition with phases. n bits → one state, n qubits → 2ⁿ states. But qubits cannot be copied and are fragile — quantum is faster only for certain problem classes." },
       exp:{ null: true } },
 
@@ -686,7 +686,7 @@ const AI_KB = [
       exp:{ null: true } },
 
     { k:["لا افهم","صعب","مستحيل","مبتدئ","كيف ابدأ","ابدا"],
-      a:{ ar:"ابدأ بهذه السلسلة (15 دقيقة):\n1) قسّم «ما هو الكيوبt» في قسم المفاهيم.\n2) شغّل النشاط 1 (توقع نتيجة H).\n3) افتح تجربة التراكب في المختبر.\n4) أجب عن أول 5 أسئلة في الاختبار.\بالتوفيق!",
+      a:{ ar:"ابدأ بهذه السلسلة (15 دقيقة):\n1) افتح «ما هو الكيوبت» في قسم المفاهيم.\n2) شغّل النشاط 1 (توقع نتيجة H).\n3) افتح تجربة التراكب في المختبر.\n4) أجب عن أول 5 أسئلة في الاختبار.\nبالتوفيق!",
           en:"Start with this 15-minute path:\n1) Open 'What is a qubit' in Concepts.\n2) Run Activity 1 (predict H).\n3) Load the superposition experiment in the Lab.\n4) Answer the first 5 quiz questions.\nGood luck!" },
       exp:{ null: true } },
 

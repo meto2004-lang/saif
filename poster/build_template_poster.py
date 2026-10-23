@@ -113,6 +113,12 @@ def html(page, rect, body, extra_css="", align="right", direction="rtl", line_he
     used = r.height - spare
     if scale < 0.999 and not quiet:
         STATE["errors"].append(f"[{tag}] صُغِّر تلقائيًا ×{scale:.2f}")
+    if not quiet:
+        # نسجّل المساحة المرسومة فعليًا لاكتشاف تراكب الكتل لاحقًا
+        STATE.setdefault("boxes", []).append(
+            (pymupdf.Rect(r.x0, r.y0, r.x1, r.y0 + used), tag,
+             "".join(ch for ch in body if ch.isalnum() or ch in " ")[:28])
+        )
     return used
 
 
@@ -432,14 +438,10 @@ def panel_results(page):
         text(page, bx1, ry + 23, label, 24, "m", MUTED, "right")
         ry += 42
 
-    html(page, (x0, ry + 24, x1, ry + 72),
-         f'<span style="font-family:pl;font-size:23px;color:{MUTED};">البوابة H تصنع التراكب، وCNOT تربط '
-         "الكيوبتين: لا تظهر النتيجة 01 أو 10 أبدًا.</span>",
-         line_height=1.3, tag="circuit-caption")
-
-    html(page, (x0, y1 - 118, x1, y1),
-         '<div style="font-size:28px;line-height:1.45;"><b>ماذا تعني النتيجة؟</b> إن أعدنا التجربة '
-         'مئة مرة، ستأتي النتيجة «00» نحو خمسين مرة و«11» نحو خمسين مرة، ولا تظهر «01» أو «10» أبدًا '
+    # تفسير واحد فقط أسفل الأشرطة (كان هنا سطران متراكبان بنفس المعنى)
+    html(page, (x0, ry + 26, x1, y1),
+         '<div style="font-size:26px;line-height:1.45;"><b>ماذا تعني النتيجة؟</b> لو أعدنا التجربة '
+         'مئة مرة، ستأتي «00» نحو خمسين مرة و«11» نحو خمسين مرة، ولا تظهر «01» أو «10» أبدًا '
          '— وهذا هو التشابك بعينه.</div>', line_height=1.45, tag="circuit-explain")
 
 
@@ -624,12 +626,32 @@ def main():
     print(f"✓ {OUT_PDF}  ({os.path.getsize(OUT_PDF) / 1024:.0f} KB، "
           f"{page.rect.width / 72:.0f}×{page.rect.height / 72:.0f} بوصة)")
 
+    # ---------- فحص تراكب كتل النص (يمنع تكرار خلل «سطرين فوق بعضهما»)
+    overlaps = []
+    boxes = STATE.get("boxes", [])
+    for i, (r1, t1, s1) in enumerate(boxes):
+        for r2, t2, s2 in boxes[i + 1:]:
+            inter = pymupdf.Rect(r1) & pymupdf.Rect(r2)
+            if inter.is_empty:
+                continue
+            a = inter.width * inter.height
+            smallest = min(r1.width * r1.height, r2.width * r2.height)
+            if smallest > 0 and a / smallest > 0.25:
+                overlaps.append(f"[{t1}] ↔ [{t2}] تراكب {a / smallest:.0%}")
+
     if STATE["errors"]:
         print("\n⚠ ملاحظات:")
         for e in STATE["errors"]:
             print("   ", e)
     else:
         print("✓ كل الكتل داخل أطرها بلا تصغير تلقائي")
+
+    if overlaps:
+        print(f"\n⚠ تراكب نصوص: {len(overlaps)}")
+        for o in overlaps:
+            print("   ", o)
+    else:
+        print("✓ لا تراكب بين كتل النص")
 
     if "--preview" in sys.argv:
         d2 = pymupdf.open(OUT_PDF)

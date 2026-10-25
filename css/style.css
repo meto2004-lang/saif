@@ -324,7 +324,57 @@ body.light .float-chip{ background:rgba(255,255,255,.92); box-shadow:0 10px 24px
 .float-chip.c3{ top:44%; inset-inline-end:-4%; animation-delay:2.1s; color:var(--purple-2); }
 @keyframes floatY{ 50%{ transform:translateY(-14px); } }
 
+/* الصورة التوضيحية الرئيسية (1) في الواجهة + مصغّرة كرة بلوك عائمة فوقها */
+.hero-figure{ position:relative; width:min(560px,100%); }
+.hero-media{ position:relative; }
+.hero-media img{
+    display:block; width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:28px;
+    border:1px solid var(--line); box-shadow:var(--shadow); background:#f8fafc;
+}
+.hero-caption{
+    margin-top:14px; padding:13px 18px; border-radius:18px;
+    background:var(--panel); border:1px solid var(--line); box-shadow:var(--shadow);
+    backdrop-filter:blur(10px); font-size:14.3px; color:var(--text-2); line-height:1.7;
+}
+.hero-caption b{ display:block; color:var(--text); font-size:15.5px; margin-bottom:2px; }
+.bloch-mini{
+    position:absolute; width:150px; inset-inline-end:2px; bottom:126px; z-index:2;
+    padding:10px; border-radius:24px; background:var(--panel);
+    border:1px solid var(--line-strong); box-shadow:var(--glow); backdrop-filter:blur(8px);
+}
+
 /* ---------- 7) البطاقات ---------- */
+/* الصورة التوضيحية (2): مقارنة البت والكيوبت أعلى بطاقات المفاهيم */
+.compare-figure{
+    display:grid; grid-template-columns:1.25fr .75fr; gap:22px; align-items:center;
+    margin:0 0 22px; padding:18px; border-radius:var(--radius);
+    background:var(--panel); border:1px solid var(--line); box-shadow:var(--shadow);
+    backdrop-filter:blur(10px);
+}
+.compare-media{ position:relative; }
+.compare-media img{
+    display:block; width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:20px;
+    border:1px solid var(--line); background:#f8fafc;
+}
+/* التسميتان مثبّتتان يسار/يمين الصورة فيزيائيًا (لا تتأثران باتجاه RTL/LTR) */
+.compare-label{
+    position:absolute; bottom:12px; display:flex; flex-direction:column; align-items:center; gap:0;
+    padding:6px 14px; border-radius:13px; line-height:1.35;
+    background:rgba(255,255,255,.9); border:1px solid var(--line-strong);
+    box-shadow:0 10px 24px -10px rgba(15,23,42,.22); backdrop-filter:blur(6px);
+}
+.compare-label b{ font-family:var(--font-tech); font-size:14px; color:#6d28d9; }
+.compare-label small{ font-size:11.5px; font-weight:700; color:#475569; }
+.compare-label.lbl-bit{ left:12px; }
+.compare-label.lbl-qubit{ right:12px; }
+.compare-label.lbl-qubit b{ color:#0891b2; }
+.compare-figure figcaption h3{ font-size:20px; font-weight:900; line-height:1.5; margin-bottom:8px; }
+.compare-figure figcaption p{ color:var(--text-2); font-size:15px; }
+.compare-chips{ display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; }
+.compare-chips span{
+    font-family:var(--font-tech); font-size:12.5px; padding:6px 13px; border-radius:99px;
+    background:var(--grad-soft); border:1px solid var(--line-strong); color:var(--purple);
+}
 .cards-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(min(290px,100%),1fr)); gap:20px; }
 .card{
     position:relative; overflow:hidden; cursor:pointer;
@@ -706,6 +756,11 @@ body.light .q-opt.correct .k, body.light .q-opt.wrong .k{ color:#fff; }
     display:grid; place-items:center; overflow:hidden;
 }
 .m-illu svg{ width:100%; height:auto; max-height:190px; }
+/* صورة توضيحية فوتوغرافية الأسلوب داخل نافذة المفهوم (تعلو الرسم التخطيطي) */
+.m-illu .m-photo{
+    display:block; width:100%; max-height:250px; object-fit:cover;
+    border-radius:14px; margin-bottom:14px; background:#f8fafc;
+}
 .m-points{ display:flex; flex-direction:column; gap:9px; margin:14px 0; }
 .m-points li{ position:relative; padding-inline-start:26px; font-size:14.8px; }
 .m-points li::before{
@@ -939,6 +994,7 @@ body.light .msg.bot{ background:rgba(139,92,246,.08); }
     .hero{ grid-template-columns:1fr; gap:30px; }
     .hero-visual{ order:-1; min-height:300px; }
     .bloch{ width:min(330px,80%); }
+    .bloch.bloch-mini{ width:128px; bottom:116px; }
     .lab-layout{ grid-template-columns:1fr; }
     .lab-side{ position:static; flex-direction:row; flex-wrap:wrap; }
     .lab-side .panel{ flex:1 1 300px; }
@@ -952,6 +1008,7 @@ body.light .msg.bot{ background:rgba(139,92,246,.08); }
     .main{ margin-inline-start:0; }
     .icon-btn{ display:grid; }
     .hero-stats{ grid-template-columns:repeat(2,1fr); }
+    .compare-figure{ grid-template-columns:1fr; gap:16px; }
 }
 @media (max-width: 640px){
     .section{ padding:46px 0 20px; }
@@ -967,6 +1024,11 @@ body.light .msg.bot{ background:rgba(139,92,246,.08); }
     .topbar-title{ display:none; }
     #themeBtn span{ display:none; }
     .hero-actions .btn{ width:100%; }
+    .bloch.bloch-mini{ display:none; } /* على الجوال تكتفي الواجهة بالصورة الرئيسية */
+    .compare-figure{ padding:14px; }
+    .compare-label{ padding:4px 10px; bottom:8px; }
+    .compare-label b{ font-size:12px; }
+    .compare-label small{ font-size:10.3px; }
     .cards-grid{ grid-template-columns:1fr; }
     .lab-side{ flex-direction:column; }
     .modal-box{ padding:20px; margin-top:3vh; }

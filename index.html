@@ -147,9 +147,25 @@
                 </div>
             </div>
 
-            <!-- كرة بلوك المتحركة -->
-            <div class="hero-visual reveal" aria-hidden="true">
-                <div class="bloch">
+            <!-- الصورة التوضيحية الرئيسية (1): كيوبت متوهج خلفه دائرة كمية + مصغّرة كرة بلوك -->
+            <div class="hero-visual reveal">
+                <figure class="hero-figure">
+                    <div class="hero-media">
+                        <img src="images/hero-qubit.jpg" fetchpriority="high" decoding="async"
+                             data-alt-ar="رسم توضيحي لكيوبت: كرة زجاجية متوهجة بداخلها سهم كهرماني يمثل متجه الحالة، وحولها حلقات مدارية سماوية وبنفسجية، وفي الخلفية أسلاك دائرة كمية عليها بوابات"
+                             data-alt-en="Illustration of a qubit: a glowing glass sphere with an amber state-vector arrow inside, cyan and violet orbit rings around it, and a quantum circuit with gates in the background"
+                             alt="رسم توضيحي لكيوبت: كرة زجاجية متوهجة بداخلها سهم كهرماني يمثل متجه الحالة، وحولها حلقات مدارية سماوية وبنفسجية، وفي الخلفية أسلاك دائرة كمية عليها بوابات">
+                        <div class="float-chip c1">|ψ⟩ = α|0⟩ + β|1⟩</div>
+                        <div class="float-chip c2">H • CNOT</div>
+                        <div class="float-chip c3">Superposition</div>
+                    </div>
+                    <figcaption class="hero-caption">
+                        <b data-ar="الكيوبت: قلب الحاسوب الكمي" data-en="The qubit: the heart of a quantum computer">الكيوبت: قلب الحاسوب الكمي</b>
+                        <span data-ar="تخيّل الحالة سهمًا على كرة: الأعلى |0⟩، والأسفل |1⟩، وبينهما كل الاحتمالات ممكنة حتى نقيس."
+                              data-en="Picture the state as an arrow on a sphere: up is |0⟩, down is |1⟩, and everything in between is possible until we measure.">تخيّل الحالة سهمًا على كرة: الأعلى |0⟩، والأسفل |1⟩، وبينهما كل الاحتمالات ممكنة حتى نقيس.</span>
+                    </figcaption>
+                </figure>
+                <div class="bloch bloch-mini" aria-hidden="true">
                     <svg viewBox="0 0 320 320" class="bloch-svg">
                         <defs>
                             <linearGradient id="gline" x1="0" y1="0" x2="1" y2="1">
@@ -169,11 +185,6 @@
                         <text x="160" y="22" class="bloch-label">|0⟩</text>
                         <text x="160" y="312" class="bloch-label">|1⟩</text>
                     </svg>
-                    <div class="orbit o1"></div>
-                    <div class="orbit o2"></div>
-                    <div class="float-chip c1">|ψ⟩ = α|0⟩ + β|1⟩</div>
-                    <div class="float-chip c2">H • CNOT</div>
-                    <div class="float-chip c3">Superposition</div>
                 </div>
             </div>
         </div>
@@ -337,6 +348,26 @@
                 اضغط على أي بطاقة لعرض الشرح المبسّط والرسم التوضيحي والمثال التفاعلي.
             </p>
         </div>
+        <!-- الصورة التوضيحية (2): البت عملة ساكنة، والكيوبت عملة ما تزال تدور -->
+        <figure class="compare-figure">
+            <div class="compare-media">
+                <img src="images/bit-vs-qubit.jpg" loading="lazy" decoding="async"
+                     data-alt-ar="رسم مقارن: إلى اليسار عملة بنفسجية ساكنة تحمل الرقم 0 وتمثل البت، وإلى اليمين عملتان متداخلتان تدوران وتحملان الرقمين 0 و1 معا وتمثلان الكيوبت"
+                     data-alt-en="Comparison illustration: on the left a still violet coin showing 0 representing a bit, on the right two overlapping spinning coins showing 0 and 1 together representing a qubit"
+                     alt="رسم مقارن: إلى اليسار عملة بنفسجية ساكنة تحمل الرقم 0 وتمثل البت، وإلى اليمين عملتان متداخلتان تدوران وتحملان الرقمين 0 و1 معا وتمثلان الكيوبت">
+                <span class="compare-label lbl-bit"><b>Bit</b><small data-ar="0 أو 1 فقط" data-en="Only 0 or 1">0 أو 1 فقط</small></span>
+                <span class="compare-label lbl-qubit"><b>Qubit</b><small data-ar="مزيج من 0 و1" data-en="A blend of 0 and 1">مزيج من 0 و1</small></span>
+            </div>
+            <figcaption>
+                <h3 data-ar="الفرق في صورة واحدة: عملة ساكنة وعملة تدور" data-en="The difference in one picture: a still coin and a spinning coin">الفرق في صورة واحدة: عملة ساكنة وعملة تدور</h3>
+                <p data-ar="البت يشبه عملة مستقرة على الطاولة: يظهر وجهًا واحدًا فقط، 0 أو 1. أما الكيوبت فيشبه عملة ما تزال تدور في الهواء: قبل أن تسقط (أي قبل القياس) تبقى النتيجتان ممكنتين باحتمالات معينة."
+                   data-en="A bit is like a coin lying flat on a table: it shows one face only, 0 or 1. A qubit is like a coin still spinning in the air: before it lands (is measured), both outcomes remain possible with certain probabilities.">البت يشبه عملة مستقرة على الطاولة: يظهر وجهًا واحدًا فقط، 0 أو 1. أما الكيوبت فيشبه عملة ما تزال تدور في الهواء: قبل أن تسقط (أي قبل القياس) تبقى النتيجتان ممكنتين باحتمالات معينة.</p>
+                <div class="compare-chips" dir="ltr">
+                    <span>Bit = 0 | 1</span>
+                    <span>Qubit = α|0⟩ + β|1⟩</span>
+                </div>
+            </figcaption>
+        </figure>
         <div class="cards-grid" id="conceptsGrid"></div>
     </section>
 

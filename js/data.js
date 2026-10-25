@@ -56,6 +56,11 @@ const CONCEPTS = [
             { ar: "الكمية ليست «أسرع دائماً» بل مناسبة لبعض المشكلات فقط.", en: "Quantum is not always faster — only for certain problems." }
         ],
         illu: "compare",
+        image: "images/bit-vs-qubit.jpg",
+        imageAlt: {
+            ar: "عملة بنفسجية ساكنة تحمل 0 تمثل البت، وعملتان متداخلتان تدوران وتحملان 0 و1 معا وتمثلان الكيوبت",
+            en: "A still violet coin showing 0 for a bit, and two overlapping spinning coins showing 0 and 1 together for a qubit"
+        },
         example: "compare",
         cols: [["X"], ["Measure"]]
     },

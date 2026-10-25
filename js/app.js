@@ -33,6 +33,12 @@ function applyLang() {
         if (v !== undefined) el.textContent = v;
     });
 
+    /* النص البديل للصور التوضيحية يتبع اللغة الحالية */
+    $$("img[data-alt-ar]").forEach(img => {
+        const v = LANG === "ar" ? img.dataset.altAr : img.dataset.altEn;
+        if (v) img.alt = v;
+    });
+
     $("#langLabel").textContent = LANG === "ar" ? "EN" : "ع";
     $("#chatText").placeholder = LANG === "ar"
         ? "اكتب سؤالك عن الحوسبة الكمية…" : "Ask about quantum computing…";
@@ -292,7 +298,7 @@ function openConcept(id) {
         </div>
         <div class="m-body">
             ${c.long.map(p => `<p>${t(p)}</p>`).join("")}
-            <div class="m-illu">${ILLUS[c.illu]}</div>
+            <div class="m-illu">${c.image ? `<img class="m-photo" src="${c.image}" alt="${t(c.imageAlt)}" loading="lazy" decoding="async">` : ""}${ILLUS[c.illu]}</div>
             <ul class="m-points">${c.points.map(p => `<li>${t(p)}</li>`).join("")}</ul>
             <div class="m-example">
                 <h4><svg class="btn-ic"><use href="#ic-play"/></svg>${LANG === "ar" ? "مثال تفاعلي — جرّب بنفسك" : "Interactive example — try it yourself"}</h4>

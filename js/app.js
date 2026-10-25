@@ -59,7 +59,7 @@ $("#langBtn").addEventListener("click", () => {
 /* ============ 2) الوضع الليلي / الفاتح ============ */
 const themeBtn = $("#themeBtn");
 function applyTheme() {
-    const light = store.get("qc-theme", "dark") === "light";
+    const light = store.get("qc-theme", "light") === "light";
     document.body.classList.toggle("light", light);
     $("#themeIcon").setAttribute("href", light ? "#ic-sun" : "#ic-moon");
 }
@@ -82,7 +82,7 @@ applyTheme();
         pts = Array.from({ length: n }, () => ({
             x: Math.random() * w, y: Math.random() * h,
             vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28,
-            r: Math.random() * 1.7 + .5, c: Math.random() > .55 ? "34,211,238" : "123,92,255"
+            r: Math.random() * 1.7 + .5, c: Math.random() > .55 ? "34,211,238" : "139,92,246"
         }));
     }
     function draw() {
@@ -98,7 +98,7 @@ applyTheme();
             const a = pts[i], b = pts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
             if (d < 130) {
                 ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-                ctx.strokeStyle = `rgba(120,150,255,${.16 * (1 - d / 130)})`;
+                ctx.strokeStyle = `rgba(148,163,184,${.16 * (1 - d / 130)})`;
                 ctx.lineWidth = .7; ctx.stroke();
             }
         }
@@ -253,12 +253,12 @@ const quirkUrl = (cols, bust = false) =>
 
 /* ============ 6) بطاقات المفاهيم + النافذة ============ */
 const ILLUS = {
-    qubit: `<svg viewBox="0 0 420 150"><circle cx="210" cy="75" r="62" stroke="#7b5cff" stroke-opacity=".6"/><ellipse cx="210" cy="75" rx="62" ry="22" stroke="#22d3ee" stroke-opacity=".55"/><line x1="210" y1="13" x2="210" y2="137" stroke="#fff" stroke-opacity=".3"/><line x1="210" y1="75" x2="258" y2="41" stroke="#ffd166" stroke-width="3"/><circle cx="258" cy="41" r="7" fill="#ffd166"/><text x="210" y="147" fill="#22d3ee" font-size="14" text-anchor="middle" stroke="none">|0⟩ … |1⟩</text></svg>`,
-    compare: `<svg viewBox="0 0 420 150"><rect x="30" y="35" width="140" height="80" rx="10" stroke="#7b5cff"/><text x="100" y="70" fill="#a8b2d9" font-size="13" text-anchor="middle" stroke="none">Bit</text><text x="100" y="95" fill="#fff" font-size="17" text-anchor="middle" stroke="none">0 أو 1</text><rect x="250" y="35" width="140" height="80" rx="10" stroke="#22d3ee"/><text x="320" y="70" fill="#a8b2d9" font-size="13" text-anchor="middle" stroke="none">Qubit</text><text x="320" y="95" fill="#ffd166" font-size="17" text-anchor="middle" stroke="none">α|0⟩+β|1⟩</text><path d="M175 75h65" stroke="#ffd166" stroke-dasharray="5 5"/><path d="M232 68l10 7-10 7" fill="#ffd166"/></svg>`,
-    superposition: `<svg viewBox="0 0 420 150"><text x="40" y="82" fill="#fff" font-size="18" stroke="none">|0⟩</text><path d="M75 75h60" stroke="#22d3ee"/><rect x="140" y="52" width="46" height="46" rx="9" fill="#7b5cff" stroke="none"/><text x="163" y="82" fill="#fff" font-size="18" text-anchor="middle" stroke="none">H</text><path d="M190 75h45" stroke="#22d3ee"/><path d="M235 75l60-32M235 75l60 32" stroke="#ffd166"/><text x="315" y="52" fill="#ffd166" font-size="16" stroke="none">|+⟩ 50%</text><text x="315" y="106" fill="#ffd166" font-size="16" stroke="none">|−⟩ 50%</text></svg>`,
-    entangle: `<svg viewBox="0 0 420 150"><circle cx="110" cy="75" r="34" stroke="#22d3ee"/><circle cx="310" cy="75" r="34" stroke="#a78bfa"/><path d="M144 75c40-38 92-38 132 0" stroke="#ffd166" stroke-dasharray="6 6"/><path d="M144 75c40 38 92 38 132 0" stroke="#ffd166" stroke-dasharray="6 6"/><text x="110" y="82" fill="#22d3ee" font-size="15" text-anchor="middle" stroke="none">q0</text><text x="310" y="82" fill="#a78bfa" font-size="15" text-anchor="middle" stroke="none">q1</text><text x="210" y="30" fill="#ffd166" font-size="13" text-anchor="middle" stroke="none">Entangled</text></svg>`,
-    measure: `<svg viewBox="0 0 420 150"><path d="M25 90q20-45 40 0t40 0t40 0" stroke="#22d3ee"/><path d="M155 75h60" stroke="#ffd166"/><rect x="225" y="45" width="46" height="46" rx="9" fill="#3b2f8f" stroke="#7b5cff"/><text x="248" y="75" fill="#67e8f9" font-size="16" text-anchor="middle" stroke="none">M</text><path d="M278 68h45M278 68l10-7M323 68l-10 7" stroke="#ffd166"/><rect x="335" y="52" width="26" height="46" rx="4" fill="#7b5cff" stroke="none"/><rect x="370" y="52" width="26" height="46" rx="4" fill="#22d3ee" stroke="none"/><text x="348" y="45" fill="#a8b2d9" font-size="12" text-anchor="middle" stroke="none">0</text><text x="383" y="45" fill="#a8b2d9" font-size="12" text-anchor="middle" stroke="none">1</text></svg>`,
-    gates: `<svg viewBox="0 0 420 150"><line x1="20" y1="75" x2="400" y2="75" stroke="#22d3ee" stroke-opacity=".7"/><rect x="70" y="52" width="46" height="46" rx="9" fill="#7b5cff" stroke="none"/><text x="93" y="83" fill="#fff" font-size="17" text-anchor="middle" stroke="none">H</text><rect x="185" y="52" width="46" height="46" rx="9" fill="#7b5cff" stroke="none"/><text x="208" y="83" fill="#fff" font-size="17" text-anchor="middle" stroke="none">X</text><rect x="300" y="52" width="46" height="46" rx="9" fill="#3b2f8f" stroke="#7b5cff"/><text x="323" y="83" fill="#67e8f9" font-size="15" text-anchor="middle" stroke="none">M</text></svg>`
+    qubit: `<svg viewBox="0 0 420 150"><circle cx="210" cy="75" r="62" stroke="#7c3aed" stroke-opacity=".6"/><ellipse cx="210" cy="75" rx="62" ry="22" stroke="#22d3ee" stroke-opacity=".55"/><line x1="210" y1="13" x2="210" y2="137" stroke="#64748b" stroke-opacity=".45"/><line x1="210" y1="75" x2="258" y2="41" stroke="#d97706" stroke-width="3"/><circle cx="258" cy="41" r="7" fill="#d97706"/><text x="210" y="147" fill="#0891b2" font-size="14" text-anchor="middle" stroke="none">|0⟩ … |1⟩</text></svg>`,
+    compare: `<svg viewBox="0 0 420 150"><rect x="30" y="35" width="140" height="80" rx="10" stroke="#7c3aed"/><text x="100" y="70" fill="#64748b" font-size="13" text-anchor="middle" stroke="none">Bit</text><text x="100" y="95" fill="#7c3aed" font-size="17" text-anchor="middle" stroke="none">0 أو 1</text><rect x="250" y="35" width="140" height="80" rx="10" stroke="#22d3ee"/><text x="320" y="70" fill="#64748b" font-size="13" text-anchor="middle" stroke="none">Qubit</text><text x="320" y="95" fill="#d97706" font-size="17" text-anchor="middle" stroke="none">α|0⟩+β|1⟩</text><path d="M175 75h65" stroke="#d97706" stroke-dasharray="5 5"/><path d="M232 68l10 7-10 7" fill="#d97706"/></svg>`,
+    superposition: `<svg viewBox="0 0 420 150"><text x="40" y="82" fill="#0891b2" font-size="18" stroke="none">|0⟩</text><path d="M75 75h60" stroke="#22d3ee"/><rect x="140" y="52" width="46" height="46" rx="9" fill="#7c3aed" stroke="none"/><text x="163" y="82" fill="#fff" font-size="18" text-anchor="middle" stroke="none">H</text><path d="M190 75h45" stroke="#22d3ee"/><path d="M235 75l60-32M235 75l60 32" stroke="#d97706"/><text x="315" y="52" fill="#d97706" font-size="16" stroke="none">|+⟩ 50%</text><text x="315" y="106" fill="#d97706" font-size="16" stroke="none">|−⟩ 50%</text></svg>`,
+    entangle: `<svg viewBox="0 0 420 150"><circle cx="110" cy="75" r="34" stroke="#22d3ee"/><circle cx="310" cy="75" r="34" stroke="#a78bfa"/><path d="M144 75c40-38 92-38 132 0" stroke="#d97706" stroke-dasharray="6 6"/><path d="M144 75c40 38 92 38 132 0" stroke="#d97706" stroke-dasharray="6 6"/><text x="110" y="82" fill="#0891b2" font-size="15" text-anchor="middle" stroke="none">q0</text><text x="310" y="82" fill="#7c3aed" font-size="15" text-anchor="middle" stroke="none">q1</text><text x="210" y="30" fill="#d97706" font-size="13" text-anchor="middle" stroke="none">Entangled</text></svg>`,
+    measure: `<svg viewBox="0 0 420 150"><path d="M25 90q20-45 40 0t40 0t40 0" stroke="#22d3ee"/><path d="M155 75h60" stroke="#d97706"/><rect x="225" y="45" width="46" height="46" rx="9" fill="#312e81" stroke="#7c3aed"/><text x="248" y="75" fill="#67e8f9" font-size="16" text-anchor="middle" stroke="none">M</text><path d="M278 68h45M278 68l10-7M323 68l-10 7" stroke="#d97706"/><rect x="335" y="52" width="26" height="46" rx="4" fill="#7c3aed" stroke="none"/><rect x="370" y="52" width="26" height="46" rx="4" fill="#0891b2" stroke="none"/><text x="348" y="45" fill="#64748b" font-size="12" text-anchor="middle" stroke="none">0</text><text x="383" y="45" fill="#64748b" font-size="12" text-anchor="middle" stroke="none">1</text></svg>`,
+    gates: `<svg viewBox="0 0 420 150"><line x1="20" y1="75" x2="400" y2="75" stroke="#22d3ee" stroke-opacity=".7"/><rect x="70" y="52" width="46" height="46" rx="9" fill="#7c3aed" stroke="none"/><text x="93" y="83" fill="#fff" font-size="17" text-anchor="middle" stroke="none">H</text><rect x="185" y="52" width="46" height="46" rx="9" fill="#7c3aed" stroke="none"/><text x="208" y="83" fill="#fff" font-size="17" text-anchor="middle" stroke="none">X</text><rect x="300" y="52" width="46" height="46" rx="9" fill="#312e81" stroke="#7c3aed"/><text x="323" y="83" fill="#67e8f9" font-size="15" text-anchor="middle" stroke="none">M</text></svg>`
 };
 
 function renderConcepts() {
@@ -334,7 +334,7 @@ function mountExample(mode, box) {
     if (mode === "qubit") {
         box.innerHTML = `
             <p>${AR ? "حرّك المؤشر لتغيير زاوية الحالة على كرة بلوك وشاهد الاحتمالات:" : "Move the slider to change the state angle on the Bloch sphere:"}</p>
-            <input type="range" id="exTheta" min="0" max="180" value="45" style="width:100%;accent-color:#22d3ee">
+            <input type="range" id="exTheta" min="0" max="180" value="45" style="width:100%;accent-color:#0891b2">
             <div class="state-view" id="exState" style="margin:12px 0"></div>${barsHTML("exB")}`;
         const upd = () => {
             const th = +$("#exTheta").value * Math.PI / 180;
